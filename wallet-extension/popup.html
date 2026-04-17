@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Wallet</h1>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="wallet">Wallet</button>
+            <button class="tab-btn" data-tab="settings">Settings</button>
+        </div>
+
+        <!-- Wallet Tab -->
+        <div id="wallet" class="tab-content active">
+            <div class="section">
+                <h2>Your Address</h2>
+                <div class="address-box">
+                    <p id="walletAddress" class="address-text">Not initialized</p>
+                    <button id="copyBtn" class="copy-btn">Copy</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Public Key</h2>
+                <div class="address-box">
+                    <p id="walletPublicKey" class="address-text">Not initialized</p>
+                    <button id="copyPublicKeyBtn" class="copy-btn">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+            <div class="section">
+                <h2>Wallet Management</h2>
+                <button id="createWalletBtn" class="btn-primary">Create New Wallet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Web Crypto API - no external dependencies needed -->
+    <script src="popup-webcrypto.js"></script>
+</body>
+</html>

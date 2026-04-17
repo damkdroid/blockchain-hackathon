@@ -7,22 +7,23 @@ NODE_URL = "http://127.0.0.1:5000"
 alice = Wallet()
 bob = Wallet()
 
-print("A's Public Key:\n", alice.get_address())
-print("\nB's Public Key:\n", bob.get_address())
+print("A's Address:", alice.get_address())
+print("B's Address:", bob.get_address())
 
-# Create transaction
-tx = Transaction(alice.get_address(), bob.get_address(), 100)
+# Create transaction using simple addresses
+tx = Transaction(alice.get_address(), bob.get_address(), 100, alice.get_public_key())
 
 # Sign transaction
 tx.sign(alice.private_key)
 
 # Send to node
 data = {
-    "sender": tx.sender,
-    "receiver": tx.receiver,
+    "sender": tx.sender,  # 0x-prefixed address
+    "receiver": tx.receiver,  # 0x-prefixed address
     "amount": tx.amount,
     "timestamp": tx.timestamp,
-    "signature": tx.signature.hex()
+    "signature": tx.signature.hex(),
+    "sender_public_key": tx.sender_public_key  # Include public key for verification
 }
 
 response = requests.post(f"{NODE_URL}/add_transaction", json=data)

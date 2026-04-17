@@ -19,7 +19,8 @@ def get_pending_transactions():
         tx = Transaction(
             tx_data['sender'],
             tx_data['receiver'],
-            tx_data['amount']
+            tx_data['amount'],
+            tx_data.get('sender_public_key')
         )
         tx.timestamp = tx_data['timestamp']
         tx.signature = bytes.fromhex(tx_data['signature']) if tx_data['signature'] else None
@@ -71,7 +72,8 @@ def submit_block(block):
                 "receiver": tx.receiver,
                 "amount": tx.amount,
                 "timestamp": tx.timestamp,
-                "signature": tx.signature.hex() if tx.signature else None
+                "signature": tx.signature.hex() if tx.signature else None,
+                "sender_public_key": tx.sender_public_key
             }
             for tx in block.transactions
         ],

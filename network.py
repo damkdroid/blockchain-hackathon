@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from main import Blockchain, Transaction, Block
-import json
 
 app = Flask(__name__)
 
@@ -16,9 +15,10 @@ def add_transaction():
 
     try:
         tx = Transaction(
-            data['sender'],
-            data['receiver'],
-            data['amount']
+            data['sender'],  # 0x-prefixed address
+            data['receiver'],  # 0x-prefixed address
+            data['amount'],
+            data.get('sender_public_key')  # Full public key for verification
         )
 
         tx.timestamp = data['timestamp']  
@@ -44,11 +44,12 @@ def get_transactions():
 
     for tx in blockchain.pending_transactions:
         txs.append({
-            "sender": tx.sender,
-            "receiver": tx.receiver,
+            "sender": tx.sender,  # 0x-prefixed address
+            "receiver": tx.receiver,  # 0x-prefixed address
             "amount": tx.amount,
             "timestamp": tx.timestamp,
-            "signature": tx.signature.hex() if tx.signature else None
+            "signature": tx.signature.hex() if tx.signature else None,
+            "sender_public_key": tx.sender_public_key
         })
 
     return jsonify(txs), 200
@@ -66,9 +67,10 @@ def submit_block():
 
         for tx_data in data['transactions']:
             tx = Transaction(
-                tx_data['sender'],
-                tx_data['receiver'],
-                tx_data['amount']
+                tx_data['sender'],  # 0x-prefixed address
+                tx_data['receiver'],  # 0x-prefixed address
+                tx_data['amount'],
+                tx_data.get('sender_public_key')
             )
             tx.timestamp = tx_data['timestamp']
             tx.signature = bytes.fromhex(tx_data['signature']) if tx_data['signature'] else None

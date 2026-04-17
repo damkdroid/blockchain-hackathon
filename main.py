@@ -15,6 +15,13 @@ class Wallet:
         self.public_key = self.key.publickey()
 
     def get_address(self):
+        """Return 0x-prefixed SHA256 hash of public key"""
+        public_key_bytes = self.public_key.export_key()
+        address_hash = hashlib.sha256(public_key_bytes).hexdigest()
+        return "0x" + address_hash
+    
+    def get_public_key(self):
+        """Return full public key for signature verification"""
         return self.public_key.export_key().decode()
 
 
@@ -22,12 +29,19 @@ class Wallet:
 # TRANSACTION
 # -------------------------
 class Transaction:
-    def __init__(self, sender, receiver, amount):
-        self.sender = sender
-        self.receiver = receiver
+    def __init__(self, sender_address, receiver_address, amount, sender_public_key=None):
+        """
+        Create a transaction using simple addresses (0x-prefixed hash)
+        sender_address: 0x-prefixed hash (address of sender)
+        receiver_address: 0x-prefixed hash (address of receiver)
+        sender_public_key: Full public key for signature verification
+        """
+        self.sender = sender_address  # 0x... format
+        self.receiver = receiver_address  # 0x... format
         self.amount = amount
         self.timestamp = time.time()
         self.signature = None
+        self.sender_public_key = sender_public_key  # Store for validation
 
     def to_dict(self):
         return {
@@ -47,17 +61,31 @@ class Transaction:
         self.signature = pkcs1_15.new(private_key).sign(h)
 
     def is_valid(self):
+        """Validate transaction signature and address consistency"""
         if self.sender == "SYSTEM":
             return True
 
         if not self.signature:
             return False
 
+        if not self.sender_public_key:
+            return False
+
         try:
-            public_key = RSA.import_key(self.sender.encode())
+            # Verify signature using sender's public key
+            public_key = RSA.import_key(self.sender_public_key.encode())
             tx_string = json.dumps(self.to_dict(), sort_keys=True).encode()
             h = SHA256.new(tx_string)
             pkcs1_15.new(public_key).verify(h, self.signature)
+            
+            # Verify sender address matches public key hash
+            public_key_bytes = public_key.export_key()
+            address_hash = hashlib.sha256(public_key_bytes).hexdigest()
+            expected_address = "0x" + address_hash
+            
+            if self.sender != expected_address:
+                return False
+            
             return True
         except:
             return False
