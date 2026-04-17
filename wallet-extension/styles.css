@@ -1,3 +1,25 @@
+:root {
+    --color-background: #131313;
+    --color-background-secondary: #1c1b1b;
+    --color-background-tertiary: #262626;
+    --color-text-primary: #e5e2e1;
+    --color-text-secondary: #a9a9a9;
+    --color-text-tertiary: #777777;
+    --color-accent: #00daf3;
+    --color-accent-dim: #00a3c4;
+    --color-border-primary: #3a3a3a;
+    --color-border-secondary: #2a2a2a;
+    --color-border-tertiary: #1f1f1f;
+    --color-success: #22c55e;
+    --color-danger: #ef4444;
+    --color-warning: #f59e0b;
+    --color-info: #3b82f6;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    --font-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -5,24 +27,23 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #0b0b0b;
-    color: #e5e5e5;
+    font-family: var(--font-sans);
+    background: var(--color-background);
+    color: var(--color-text-primary);
 }
 
 /* Container */
 .container {
-    background: #111;
-    border-radius: 10px;
-    border: 1px solid #1f1f1f;
+    background: var(--color-background);
+    border-radius: var(--border-radius-lg);
     overflow: hidden;
     min-width: 450px;
 }
 
 /* Header */
 .header {
-    background: #0b0b0b;
-    border-bottom: 1px solid #1f1f1f;
+    background: var(--color-background);
+    border-bottom: 0.5px solid var(--color-border-tertiary);
     padding: 16px;
     text-align: center;
 }
@@ -30,13 +51,13 @@ body {
 .header h1 {
     font-size: 20px;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--color-text-primary);
 }
 
 /* Tabs */
 .tabs {
     display: flex;
-    border-bottom: 1px solid #1f1f1f;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
 }
 
 .tab-btn {
@@ -44,14 +65,21 @@ body {
     padding: 12px;
     background: transparent;
     border: none;
-    color: #888;
+    color: var(--color-text-secondary);
     cursor: pointer;
     font-size: 14px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+    color: var(--color-text-primary);
 }
 
 .tab-btn.active {
-    color: #3b82f6;
-    border-bottom: 2px solid #3b82f6;
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
 }
 
 /* Content */
@@ -71,116 +99,146 @@ body {
 
 .section h2 {
     font-size: 13px;
-    color: #3b82f6;
+    color: var(--color-text-secondary);
     margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 /* Inputs */
 input, textarea {
     width: 100%;
     padding: 10px;
-    background: #262626;
-    border: 1px solid #1f1f1f;
-    border-radius: 6px;
-    color: white;
+    background: var(--color-background-secondary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    color: var(--color-text-primary);
     margin-bottom: 10px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    transition: all 0.2s ease;
 }
 
 input:focus, textarea:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 2px rgba(0, 218, 243, 0.1);
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--color-text-tertiary);
 }
 
 /* Buttons */
 button {
     width: 100%;
     padding: 10px;
-    border-radius: 6px;
+    border-radius: var(--border-radius-md);
     border: none;
     cursor: pointer;
     font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
 }
 
 /* Primary */
 .btn-primary,
 .send-btn {
-    background: #3b82f6;
-    color: white;
+    background: var(--color-accent);
+    color: var(--color-background);
 }
 
-.btn-primary:hover {
-    background: #2563eb;
+.btn-primary:hover,
+.send-btn:hover {
+    background: var(--color-accent-dim);
+}
+
+.btn-primary:disabled,
+.send-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /* Secondary */
 .btn-secondary {
-    background: #1f1f1f;
-    color: #aaa;
-    border: 1px solid #2a2a2a;
+    background: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+    border: 0.5px solid var(--color-border-secondary);
 }
 
 .btn-secondary:hover {
-    background: #222;
+    background: var(--color-background-tertiary);
+    color: var(--color-text-primary);
 }
 
 /* Danger */
 .btn-danger {
-    background: #dc2626;
+    background: var(--color-danger);
     color: white;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+    opacity: 0.9;
 }
 
 /* Address box */
 .address-box {
-    background: #262626;
-    border: 1px solid #1f1f1f;
-    padding: 10px;
-    border-radius: 6px;
+    background: var(--color-background-secondary);
+    border: 0.5px solid var(--color-border-tertiary);
+    padding: 12px;
+    border-radius: var(--border-radius-md);
+    margin-bottom: 10px;
 }
 
 .address-text {
-    font-family: monospace;
+    font-family: var(--font-mono);
     font-size: 11px;
-    color: #ccc;
+    color: var(--color-text-secondary);
+    word-break: break-all;
 }
 
 /* Status */
 .status-box {
-    background: #262626;
-    border-left: 3px solid #3b82f6;
+    background: var(--color-background-secondary);
+    border-left: 3px solid var(--color-info);
     padding: 10px;
     font-size: 12px;
+    border-radius: var(--border-radius-md);
+    color: var(--color-text-primary);
 }
 
 .status-box.success {
-    border-left-color: #22c55e;
+    border-left-color: var(--color-success);
 }
 
 .status-box.error {
-    border-left-color: #ef4444;
+    border-left-color: var(--color-danger);
 }
 
 /* Transactions */
 .tx-item {
-    background: #1f1f1f;
-    border: 1px solid #1f1f1f;
+    background: var(--color-background-secondary);
+    border: 0.5px solid var(--color-border-tertiary);
     padding: 10px;
-    border-radius: 6px;
+    border-radius: var(--border-radius-md);
     margin-bottom: 8px;
     font-size: 12px;
+    color: var(--color-text-primary);
 }
 
 .tx-item.sent {
-    border-left: 3px solid #ef4444;
+    border-left: 3px solid var(--color-danger);
 }
 
 .tx-item.received {
-    border-left: 3px solid #22c55e;
+    border-left: 3px solid var(--color-success);
 }
 
 .tx-hash {
-    font-family: monospace;
+    font-family: var(--font-mono);
     font-size: 10px;
-    color: #777;
+    color: var(--color-text-tertiary);
 }
 
 /* Scrollbar */
@@ -189,6 +247,114 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #2a2a2a;
+    background: var(--color-border-secondary);
     border-radius: 3px;
+}
+
+/* =====================
+   SIGN-IN VIEW STYLES
+   ===================== */
+
+#signin-view {
+    width: 100%;
+}
+
+#signin-view.hidden {
+    display: none;
+}
+
+.signin-container {
+    background: var(--color-background);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.signin-header {
+    background: linear-gradient(135deg, var(--color-accent) 0%, #00f7ff 100%);
+    color: var(--color-background);
+    padding: 16px;
+    text-align: center;
+}
+
+.signin-header h2 {
+    font-size: 18px;
+    margin: 0;
+    font-weight: 600;
+}
+
+.signin-content {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.website-info {
+    background: rgba(0, 218, 243, 0.1);
+    border: 0.5px solid rgba(0, 218, 243, 0.3);
+    border-radius: var(--border-radius-md);
+    padding: 12px;
+    margin-bottom: 15px;
+}
+
+.website-info p {
+    margin: 8px 0;
+    font-size: 13px;
+    color: var(--color-text-primary);
+}
+
+.website-info strong {
+    color: var(--color-accent);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.message-box {
+    background: var(--color-background-secondary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    padding: 10px;
+    margin-top: 6px;
+    word-break: break-all;
+}
+
+.message-box p {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-accent);
+}
+
+.wallet-preview {
+    background: var(--color-background-secondary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    padding: 12px;
+    margin-bottom: 15px;
+}
+
+.wallet-preview p {
+    margin: 6px 0;
+    font-size: 12px;
+    color: var(--color-text-primary);
+}
+
+.wallet-preview strong {
+    color: var(--color-accent);
+}
+
+.signin-actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+.signin-actions .btn-primary,
+.signin-actions .btn-danger {
+    flex: 1;
+}
+
+.hidden {
+    display: none !important;
 }

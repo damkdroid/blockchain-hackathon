@@ -4,6 +4,9 @@ import hashlib
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
 from Crypto.Hash import SHA256
+from ecdsa import VerifyingKey
+from ecdsa.util import sigdecode_string
+
 
 # -------------------------
 # WALLET (User Identity)
@@ -44,6 +47,7 @@ class Transaction:
         self.sender_public_key = sender_public_key  # Store for validation
 
     def to_dict(self):
+        # Order matters for signature verification - must match frontend's JSON.stringify order
         return {
             "sender": self.sender,
             "receiver": self.receiver,
@@ -61,33 +65,79 @@ class Transaction:
         self.signature = pkcs1_15.new(private_key).sign(h)
 
     def is_valid(self):
-        """Validate transaction signature and address consistency"""
+        """Validate transaction signature using ECDSA (Web Crypto API) or RSA"""
         if self.sender == "SYSTEM":
             return True
 
         if not self.signature:
+            print("[DEBUG] No signature provided")
             return False
 
         if not self.sender_public_key:
+            print("[DEBUG] No public key provided")
             return False
 
         try:
-            # Verify signature using sender's public key
-            public_key = RSA.import_key(self.sender_public_key.encode())
-            tx_string = json.dumps(self.to_dict(), sort_keys=True).encode()
-            h = SHA256.new(tx_string)
-            pkcs1_15.new(public_key).verify(h, self.signature)
+            # Prepare transaction data for signature verification
+            # IMPORTANT: Key order must match frontend's JSON.stringify() order (NOT sorted)
+            tx_dict = {
+                "sender": self.sender,
+                "receiver": self.receiver,
+                "amount": self.amount,
+                "timestamp": self.timestamp
+            }
+            # Use separators to match JavaScript JSON.stringify exactly
+            tx_string = json.dumps(tx_dict, separators=(',', ':')).encode()
+            tx_hash = hashlib.sha256(tx_string).digest()
             
-            # Verify sender address matches public key hash
-            public_key_bytes = public_key.export_key()
-            address_hash = hashlib.sha256(public_key_bytes).hexdigest()
-            expected_address = "0x" + address_hash
+            print(f"[DEBUG] TX String: {tx_string}")
+            print(f"[DEBUG] TX Hash (hex): {tx_hash.hex()}")
+            print(f"[DEBUG] Signature type: {type(self.signature)}, value (first 50 chars): {str(self.signature)[:50]}")
+            print(f"[DEBUG] Public key type: {type(self.sender_public_key)}")
+            print(f"[DEBUG] Public key (first 100 chars): {str(self.sender_public_key)[:100]}")
             
-            if self.sender != expected_address:
-                return False
+            # Try ECDSA verification first (for wallet extension)
+            try:
+                print("[DEBUG] Attempting ECDSA verification...")
+                # Import the PEM public key as ECDSA P-256
+                public_key = VerifyingKey.from_pem(self.sender_public_key.encode())
+                print("[DEBUG] ECDSA key imported successfully")
+                
+                # Convert hex signature to bytes (Web Crypto API returns hex)
+                if isinstance(self.signature, str):
+                    sig_bytes = bytes.fromhex(self.signature)
+                else:
+                    sig_bytes = self.signature
+                
+                print(f"[DEBUG] Signature bytes length: {len(sig_bytes)}")
+                
+                # Verify ECDSA signature (raw format: r || s)
+                # Note: verify_digest expects pre-hashed data, don't pass hashfunc
+                public_key.verify_digest(sig_bytes, tx_hash)
+                print("[DEBUG] ✓ ECDSA signature verified!")
+                return True
+            except Exception as ecdsa_error:
+                print(f"[DEBUG] ECDSA verification failed: {ecdsa_error}")
+                # Not an ECDSA key, try RSA
+                pass
             
-            return True
-        except:
+            # Fallback to RSA verification (for backward compatibility)
+            try:
+                print("[DEBUG] Attempting RSA verification...")
+                public_key = RSA.import_key(self.sender_public_key.encode())
+                h = SHA256.new(tx_string)
+                pkcs1_15.new(public_key).verify(h, self.signature if isinstance(self.signature, bytes) else bytes.fromhex(self.signature))
+                print("[DEBUG] ✓ RSA signature verified!")
+                return True
+            except Exception as rsa_error:
+                print(f"[DEBUG] RSA verification failed: {rsa_error}")
+            
+            print("[DEBUG] All signature verification attempts failed")
+            return False
+        except Exception as e:
+            print(f"[DEBUG] Signature validation error: {e}")
+            import traceback
+            traceback.print_exc()
             return False
 
 

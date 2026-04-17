@@ -12,41 +12,82 @@
             <h1>Wallet</h1>
         </div>
 
-        <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="wallet">Wallet</button>
-            <button class="tab-btn" data-tab="settings">Settings</button>
+        <!-- Sign-In View (shown when mode=signin) -->
+        <div id="signin-view" class="hidden">
+            <div class="signin-container">
+                <div class="signin-header">
+                    <h2>Sign In Request</h2>
+                </div>
+
+                <div class="signin-content">
+                    <div class="section">
+                        <h3>Website is requesting sign-in</h3>
+                        <div class="website-info">
+                            <p><strong>Origin:</strong> <span id="signinOrigin">Loading...</span></p>
+                            <p><strong>Message:</strong></p>
+                            <div class="message-box">
+                                <p id="signinMessage">Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3>You will sign with</h3>
+                        <div class="wallet-preview">
+                            <p><strong>Address:</strong></p>
+                            <p id="signinAddress" class="address-text">Not initialized</p>
+                            <p style="margin-top: 10px;"><strong>Public Key:</strong></p>
+                            <p id="signinPublicKey" class="address-text" style="font-size: 9px; max-height: 60px; overflow-y: auto;">Not initialized</p>
+                        </div>
+                    </div>
+
+                    <div class="section signin-actions">
+                        <button id="approveSignInBtn" class="btn-primary">✓ Sign In</button>
+                        <button id="denySignInBtn" class="btn-danger">✕ Deny</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Wallet Tab -->
-        <div id="wallet" class="tab-content active">
-            <div class="section">
-                <h2>Your Address</h2>
-                <div class="address-box">
-                    <p id="walletAddress" class="address-text">Not initialized</p>
-                    <button id="copyBtn" class="copy-btn">Copy</button>
+        <!-- Normal Wallet View (default mode) -->
+        <div id="wallet-view">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="wallet">Wallet</button>
+                <button class="tab-btn" data-tab="settings">Settings</button>
+            </div>
+
+            <!-- Wallet Tab -->
+            <div id="wallet" class="tab-content active">
+                <div class="section">
+                    <h2>Your Address</h2>
+                    <div class="address-box">
+                        <p id="walletAddress" class="address-text">Not initialized</p>
+                        <button id="copyBtn" class="copy-btn">Copy</button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Public Key</h2>
+                    <div class="address-box">
+                        <p id="walletPublicKey" class="address-text">Not initialized</p>
+                        <button id="copyPublicKeyBtn" class="copy-btn">Copy</button>
+                    </div>
                 </div>
             </div>
 
-            <div class="section">
-                <h2>Public Key</h2>
-                <div class="address-box">
-                    <p id="walletPublicKey" class="address-text">Not initialized</p>
-                    <button id="copyPublicKeyBtn" class="copy-btn">Copy</button>
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-content">
+                <div class="section">
+                    <h2>Wallet Management</h2>
+                    <button id="createWalletBtn" class="btn-primary">Create New Wallet</button>
                 </div>
-            </div>
-        </div>
-
-        <!-- Settings Tab -->
-        <div id="settings" class="tab-content">
-            <div class="section">
-                <h2>Wallet Management</h2>
-                <button id="createWalletBtn" class="btn-primary">Create New Wallet</button>
             </div>
         </div>
     </div>
 
     <!-- Web Crypto API - no external dependencies needed -->
     <script src="popup-webcrypto.js"></script>
+    <script src="popup.js"></script>
 </body>
 </html>

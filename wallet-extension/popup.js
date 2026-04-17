@@ -1,18 +1,335 @@
-// =====================
-// WALLET MANAGEMENT
-// =====================
+/**
+ * Popup Script - popup.js
+ * Handles both normal wallet view and sign-in request view
+ */
 
-class WalletManager {
-    constructor() {
-        this.wallet = null;
-        this.nodeUrl = 'http://127.0.0.1:5000';
-        this.loadWallet();
+let pendingSignInRequest = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+if (!window.crypto || !window.crypto.subtle) {
+    document.body.innerHTML = '<div style="padding: 20px; color: red;"><strong>Error:</strong> Web Crypto API not available.</div>';
+    return;
+}
+
+    try {
+        walletManager = new WalletManager();
+        await walletManager.loadWallet();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');
+
+        if (mode === 'signin') {
+            await initSignInView();
+        } else {
+            txHandler = new TransactionHandler(walletManager, 'http://127.0.0.1:5000');
+            await initWalletView();
+            setupEventListeners();
+        }
+    } catch (error) {
+        console.error('Initialization error:', error);
+        document.body.innerHTML = '<div style="padding: 20px; color: red;"><strong>Error:</strong> ' + error.message + '</div>';
     }
+});
+
+/**
+ * Initialize the normal wallet view
+ */
+async function initWalletView() {
+    const walletView = document.getElementById('wallet-view');
+    const signinView = document.getElementById('signin-view');
+    
+    if (walletView) walletView.style.display = 'block';
+    if (signinView) signinView.classList.add('hidden');
+    
+    await updateUI();
+    setupWalletEventListeners();
+}
+
+/**
+ * Initialize the sign-in request view
+ */
+async function initSignInView() {
+    const walletView = document.getElementById('wallet-view');
+    const signinView = document.getElementById('signin-view');
+    
+    if (walletView) walletView.style.display = 'none';
+    if (signinView) signinView.classList.remove('hidden');
+
+    // Load pending sign-in request
+    pendingSignInRequest = await getPendingSignInRequest();
+    
+    if (!pendingSignInRequest) {
+        alert('No pending sign-in request');
+        window.close();
+        return;
+    }
+
+    // Update sign-in UI with request details
+    const originEl = document.getElementById('signinOrigin');
+    const messageEl = document.getElementById('signinMessage');
+    const addressEl = document.getElementById('signinAddress');
+    const pubKeyEl = document.getElementById('signinPublicKey');
+
+    if (originEl) originEl.textContent = pendingSignInRequest.origin || 'Unknown';
+    if (messageEl) messageEl.textContent = pendingSignInRequest.challenge;
+
+    // Show wallet details
+    if (walletManager.wallet) {
+        if (addressEl) addressEl.textContent = walletManager.getAddress();
+        if (pubKeyEl) pubKeyEl.textContent = walletManager.getPublicKey();
+    } else {
+        if (addressEl) addressEl.textContent = 'Wallet not initialized';
+        if (pubKeyEl) pubKeyEl.textContent = 'Create a wallet first';
+    }
+
+    // Setup sign-in event listeners
+    setupSignInEventListeners();
+}
+
+/**
+ * Get pending sign-in request from session storage
+ */
+async function getPendingSignInRequest() {
+    return new Promise((resolve) => {
+        chrome.storage.session.get(['pending_signin_request'], (result) => {
+            resolve(result.pending_signin_request || null);
+        });
+    });
+}
+
+/**
+ * Clear pending sign-in request
+ */
+async function clearPendingSignInRequest() {
+    return new Promise((resolve) => {
+        chrome.storage.session.remove(['pending_signin_request'], resolve);
+    });
+}
+
+/**
+ * Setup event listeners for wallet view
+ */
+function setupWalletEventListeners() {
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', switchTab);
+    });
+
+    // Wallet buttons
+    const copyBtn = document.getElementById('copyBtn');
+    const copyPubKeyBtn = document.getElementById('copyPublicKeyBtn');
+    const createWalletBtn = document.getElementById('createWalletBtn');
+
+    if (copyBtn) copyBtn.addEventListener('click', copyAddress);
+    if (copyPubKeyBtn) copyPubKeyBtn.addEventListener('click', copyPublicKey);
+    if (createWalletBtn) createWalletBtn.addEventListener('click', createNewWallet);
+}
+
+/**
+ * Setup event listeners for sign-in view
+ */
+function setupSignInEventListeners() {
+    const approveBtn = document.getElementById('approveSignInBtn');
+    const denyBtn = document.getElementById('denySignInBtn');
+
+    if (approveBtn) approveBtn.addEventListener('click', approveSignIn);
+    if (denyBtn) denyBtn.addEventListener('click', denySignIn);
+}
+
+/**
+ * Approve sign-in request
+ */
+async function approveSignIn() {
+    if (!walletManager.wallet) {
+        alert('Wallet not initialized');
+        return;
+    }
+
+    try {
+        const approveBtn = document.getElementById('approveSignInBtn');
+        if (approveBtn) {
+            approveBtn.disabled = true;
+            approveBtn.textContent = 'Signing...';
+        }
+
+        // Get authentication data (signs the message)
+        const authData = await walletManager.getAuthData(pendingSignInRequest.challenge);
+
+        // Send response back to content script via tabs.sendMessage
+        chrome.tabs.sendMessage(pendingSignInRequest.tabId, {
+            type: 'WALLET_SIGNIN_RESPONSE',
+            id: pendingSignInRequest.id,
+            success: true,
+            data: authData
+        });
+
+        // Clear pending request
+        await clearPendingSignInRequest();
+
+        // Close popup
+        window.close();
+    } catch (error) {
+        alert('Error signing message: ' + error.message);
+        const approveBtn = document.getElementById('approveSignInBtn');
+        if (approveBtn) {
+            approveBtn.disabled = false;
+            approveBtn.textContent = '✓ Sign In';
+        }
+    }
+}
+
+/**
+ * Deny sign-in request
+ */
+async function denySignIn() {
+    try {
+        // Send error response back to content script via tabs.sendMessage
+        chrome.tabs.sendMessage(pendingSignInRequest.tabId, {
+            type: 'WALLET_SIGNIN_RESPONSE',
+            id: pendingSignInRequest.id,
+            success: false,
+            error: 'User denied sign-in request'
+        });
+
+        // Clear pending request
+        await clearPendingSignInRequest();
+
+        // Close popup
+        window.close();
+    } catch (error) {
+        console.error('Error denying sign-in:', error);
+        window.close();
+    }
+}
+
+/**
+ * Update wallet UI
+ */
+async function updateUI() {
+    const addressEl = document.getElementById('walletAddress');
+    const statusEl = document.getElementById('status');
+    const keyStatusEl = document.getElementById('keyStatus');
+    const nodeUrlInput = document.getElementById('nodeUrl');
+
+    if (walletManager.wallet) {
+        if (addressEl) addressEl.textContent = walletManager.getAddress();
+        if (statusEl) statusEl.textContent = 'Initialized ✓';
+        if (keyStatusEl) keyStatusEl.classList.remove('hidden');
+        if (nodeUrlInput && txHandler) nodeUrlInput.value = txHandler.nodeUrl;
+    } else {
+        if (addressEl) addressEl.textContent = 'Not initialized - Create a wallet';
+        if (statusEl) statusEl.textContent = 'Uninitialized';
+        if (keyStatusEl) keyStatusEl.classList.add('hidden');
+    }
+
+    updateTransactionHistory();
+}
+
+/**
+ * Switch tabs
+ */
+function switchTab(e) {
+    const tabName = e.target.dataset.tab;
+    
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    const tabEl = document.getElementById(tabName);
+    if (tabEl) {
+        tabEl.classList.add('active');
+        e.target.classList.add('active');
+    }
+}
+
+/**
+ * Copy address to clipboard
+ */
+async function copyAddress() {
+    const address = walletManager.getAddress();
+    if (!address || address === 'Not initialized - Create a wallet') {
+        alert('Wallet not initialized');
+        return;
+    }
+
+    try {
+        await navigator.clipboard.writeText(address);
+        const btn = document.getElementById('copyBtn');
+        if (btn) {
+            const originalText = btn.textContent;
+            btn.textContent = '✓ Copied!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        }
+    } catch (err) {
+        alert('Failed to copy address');
+    }
+}
+
+/**
+ * Copy public key to clipboard
+ */
+async function copyPublicKey() {
+    const publicKey = walletManager.getPublicKey();
+    if (!publicKey || publicKey === 'Not initialized') {
+        alert('Wallet not initialized');
+        return;
+    }
+
+    try {
+        await navigator.clipboard.writeText(publicKey);
+        const btn = document.getElementById('copyPublicKeyBtn');
+        if (btn) {
+            const originalText = btn.textContent;
+            btn.textContent = '✓ Copied!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        }
+    } catch (err) {
+        alert('Failed to copy public key');
+    }
+}
+
+/**
+ * Create new wallet
+ */
+async function createNewWallet() {
+    if (walletManager.wallet && !confirm('You already have a wallet. Create a new one? (Old wallet will be lost)')) {
+        return;
+    }
+
+    try {
+        const btn = document.getElementById('createWalletBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+        }
+        
+        await walletManager.generateWallet();
+        await updateUI();
+        
+        alert('✓ Wallet created successfully!');
+    } catch (error) {
+        alert('Error creating wallet: ' + error.message);
+    } finally {
+        const btn = document.getElementById('createWalletBtn');
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Create New Wallet';
+        }
+    }
+}
 
     /**
      * Generate new RSA wallet
      */
-    async generateWallet() {
+    async function generateWallet() {
         const encrypt = new JSEncrypt({ default_key_size: 2048 });
         
         this.wallet = {
@@ -29,7 +346,7 @@ class WalletManager {
     /**
      * Save wallet to Chrome storage
      */
-    async saveWallet() {
+    async function  saveWallet() {
         if (!this.wallet) return;
         
         return new Promise((resolve) => {
@@ -40,7 +357,7 @@ class WalletManager {
     /**
      * Load wallet from Chrome storage
      */
-    loadWallet() {
+    async function loadWallet() {
         return new Promise((resolve) => {
             chrome.storage.local.get(['blockchain_wallet'], (result) => {
                 if (result.blockchain_wallet) {
@@ -54,28 +371,28 @@ class WalletManager {
     /**
      * Get wallet address
      */
-    getAddress() {
+    async function getAddress() {
         return this.wallet ? this.wallet.address : null;
     }
 
     /**
      * Get public key
      */
-    getPublicKey() {
+    async function getPublicKey() {
         return this.wallet ? this.wallet.publicKey : null;
     }
 
     /**
      * Get private key
      */
-    getPrivateKey() {
+    async function getPrivateKey() {
         return this.wallet ? this.wallet.privateKey : null;
     }
 
     /**
      * Sign transaction
      */
-    signTransaction(txData) {
+    async function signTransaction(txData) {
         if (!this.wallet) {
             throw new Error('Wallet not initialized');
         }
@@ -98,7 +415,7 @@ class WalletManager {
     /**
      * Export private key (with confirmation)
      */
-    exportPrivateKey() {
+    async function exportPrivateKey() {
         if (!this.wallet) {
             throw new Error('Wallet not initialized');
         }
@@ -108,7 +425,7 @@ class WalletManager {
     /**
      * Import private key
      */
-    async importPrivateKey(privateKey) {
+    async function  importPrivateKey(privateKey) {
         try {
             const encrypt = new JSEncrypt();
             encrypt.setPrivateKey(privateKey);
@@ -133,7 +450,7 @@ class WalletManager {
     /**
      * Clear wallet
      */
-    async resetWallet() {
+    async function  resetWallet() {
         return new Promise((resolve) => {
             chrome.storage.local.remove('blockchain_wallet', () => {
                 this.wallet = null;
@@ -141,7 +458,6 @@ class WalletManager {
             });
         });
     }
-}
 
 // =====================
 // TRANSACTION HANDLER
@@ -261,50 +577,24 @@ class TransactionHandler {
 // =====================
 // GLOBAL INSTANCES
 // =====================
-
-let walletManager;
 let txHandler;
 
 // Initialize when popup opens
-document.addEventListener('DOMContentLoaded', async () => {
-    // Check if required libraries are loaded
-    if (typeof JSEncrypt === 'undefined') {
-        console.error('JSEncrypt library not loaded');
-        document.body.innerHTML = '<div style="padding: 20px; color: red;"><strong>Error:</strong> Failed to load crypto library. Please refresh the extension.</div>';
-        return;
-    }
-    
-    try {
-        walletManager = new WalletManager();
-        txHandler = new TransactionHandler(walletManager, 'http://127.0.0.1:5000');
-
-        await walletManager.loadWallet();
-        await updateUI();
-        setupEventListeners();
-    } catch (error) {
-        console.error('Initialization error:', error);
-        document.body.innerHTML = '<div style="padding: 20px; color: red;"><strong>Error:</strong> ' + error.message + '</div>';
-    }
-});
 
 // =====================
 // UI UPDATES
 // =====================
 
 async function updateUI() {
+    const addressEl = document.getElementById('walletAddress');
+    const pubKeyEl = document.getElementById('walletPublicKey');
+
     if (walletManager.wallet) {
-        // Update wallet tab
-        document.getElementById('walletAddress').textContent = walletManager.getAddress();
-        document.getElementById('status').textContent = 'Initialized ✓';
-        document.getElementById('keyStatus').classList.remove('hidden');
-        
-        // Update node URL input
-        const nodeUrlInput = document.getElementById('nodeUrl');
-        nodeUrlInput.value = txHandler.nodeUrl;
+        if (addressEl) addressEl.textContent = walletManager.getAddress();
+        if (pubKeyEl) pubKeyEl.textContent = walletManager.getPublicKey();
     } else {
-        document.getElementById('walletAddress').textContent = 'Not initialized - Create a wallet';
-        document.getElementById('status').textContent = 'Uninitialized';
-        document.getElementById('keyStatus').classList.add('hidden');
+        if (addressEl) addressEl.textContent = 'Not initialized - Create a wallet';
+        if (pubKeyEl) pubKeyEl.textContent = 'Not initialized';
     }
 
     updateTransactionHistory();
@@ -312,6 +602,7 @@ async function updateUI() {
 
 function updateTransactionHistory() {
     const historyDiv = document.getElementById('txHistory');
+    if (!historyDiv) return; 
     
     if (txHandler.txHistory.length === 0) {
         historyDiv.innerHTML = '<p class="empty">No transactions yet</p>';
@@ -343,15 +634,14 @@ function setupEventListeners() {
         btn.addEventListener('click', switchTab);
     });
 
-    // Wallet Tab
-    document.getElementById('copyBtn').addEventListener('click', copyAddress);
-    document.getElementById('createWalletBtn').addEventListener('click', createNewWallet);
-    document.getElementById('exportKeyBtn').addEventListener('click', exportPrivateKey);
-    document.getElementById('importKeyBtn').addEventListener('click', importPrivateKey);
-    document.getElementById('resetBtn').addEventListener('click', resetWallet);
+    // Wallet buttons - only ones that exist in HTML
+    const copyBtn = document.getElementById('copyBtn');
+    const copyPubKeyBtn = document.getElementById('copyPublicKeyBtn');
+    const createWalletBtn = document.getElementById('createWalletBtn');
 
-    // File input for import
-    document.getElementById('fileInput').addEventListener('change', handleFileImport);
+    if (copyBtn) copyBtn.addEventListener('click', copyAddress);
+    if (copyPubKeyBtn) copyPubKeyBtn.addEventListener('click', copyPublicKey);
+    if (createWalletBtn) createWalletBtn.addEventListener('click', createNewWallet);
 }
 
 function switchTab(e) {

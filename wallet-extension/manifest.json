@@ -1,15 +1,30 @@
 {
   "manifest_version": 3,
-  "name": "Wallet",
+  "name": "Blockchain Wallet",
   "version": "1.0",
-  "description": "",
+  "description": "Sign in with your blockchain wallet to websites",
   "permissions": [
     "storage",
-    "activeTab"
+    "activeTab",
+    "scripting"
   ],
   "host_permissions": [
     "http://127.0.0.1:*/*",
-    "http://localhost:*/*"
+    "http://localhost:*/*",
+    "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["http://127.0.0.1:*/*", "http://localhost:*/*", "file://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["wallet-api.js"],
+      "matches": ["<all_urls>"]
+    }
   ],
   "action": {
     "default_popup": "popup.html",

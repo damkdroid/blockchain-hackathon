@@ -225,6 +225,68 @@ class WalletManager {
     getPrivateKey() {
         return this.wallet ? this.wallet.privateKey : null;
     }
+
+    /**
+     * Sign a message (for authentication/sign-in)
+     * Returns signature that can be verified against the address
+     */
+    async signMessage(message) {
+        if (!this.wallet) {
+            throw new Error('Wallet not initialized');
+        }
+
+        try {
+            // Import private key
+            const privateKeyJwk = JSON.parse(this.wallet.privateKey);
+            const privateKey = await window.crypto.subtle.importKey(
+                "jwk",
+                privateKeyJwk,
+                { name: "ECDSA", namedCurve: "P-256" },
+                false, // not extractable
+                ["sign"]
+            );
+
+            // Sign message
+            const encoder = new TextEncoder();
+            const messageBuffer = encoder.encode(message);
+            const signatureBuffer = await window.crypto.subtle.sign(
+                { name: "ECDSA", hash: "SHA-256" },
+                privateKey,
+                messageBuffer
+            );
+
+            // Convert signature to hex
+            const signatureArray = new Uint8Array(signatureBuffer);
+            let signatureHex = '';
+            for (let i = 0; i < signatureArray.byteLength; i++) {
+                signatureHex += signatureArray[i].toString(16).padStart(2, '0');
+            }
+
+            return signatureHex;
+        } catch (error) {
+            throw new Error('Failed to sign message: ' + error.message);
+        }
+    }
+
+    /**
+     * Get authentication data (for sign-in)
+     * Returns address, public key, and signed message
+     */
+    async getAuthData(message) {
+        if (!this.wallet) {
+            throw new Error('Wallet not initialized');
+        }
+
+        const signature = await this.signMessage(message);
+        
+        return {
+            address: this.getAddress(),
+            publicKey: this.getPublicKey(),
+            message: message,
+            signature: signature,
+            timestamp: Date.now()
+        };
+    }
 }
 
 // =====================
