@@ -11,6 +11,12 @@ import logging
 from datetime import datetime
 from main import Block, Transaction, Wallet
 
+# Fix Windows console encoding for Unicode support
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if sys.stderr.encoding != 'utf-8':
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 # =====================
 # CONFIGURATION
 # =====================
@@ -68,27 +74,49 @@ def get_pending_transactions():
         transactions = []
 
         for tx_data in data:
-            tx = Transaction(
-                tx_data['sender'],
-                tx_data['receiver'],
-                tx_data['amount'],
-                tx_data.get('sender_public_key')
-            )
+            tx_type = tx_data.get('transaction_type', 'transfer')
+            
+            if tx_type == 'file':
+                # File transaction
+                from main import FileTransaction
+                tx = FileTransaction(
+                    tx_data['sender'],
+                    tx_data['receiver'],
+                    tx_data['file_name'],
+                    tx_data['file_hash'],
+                    tx_data['file_size'],
+                    tx_data.get('sender_public_key')
+                )
+            else:
+                # Regular transaction
+                tx = Transaction(
+                    tx_data['sender'],
+                    tx_data['receiver'],
+                    tx_data.get('amount', 0),
+                    tx_data.get('sender_public_key')
+                )
+            
             tx.timestamp = tx_data['timestamp']
-            tx.signature = bytes.fromhex(tx_data['signature']) if tx_data['signature'] else None
+            tx.signature = bytes.fromhex(tx_data['signature']) if tx_data.get('signature') else None
+            
+            # Preserve company info if present
+            if 'company_id' in tx_data:
+                tx.company_id = tx_data['company_id']
+                tx.role = tx_data.get('role')
+            
             transactions.append(tx)
 
         logger.info(f"Fetched {len(transactions)} pending transactions")
         return transactions
 
     except requests.exceptions.ConnectionError:
-        logger.error("❌ Network error: Cannot connect to node")
+        logger.error("[ERROR] Network error: Cannot connect to node")
         return None
     except requests.exceptions.Timeout:
-        logger.error("❌ Network timeout: Connection took too long")
+        logger.error("[ERROR] Network timeout: Connection took too long")
         return None
     except Exception as e:
-        logger.error(f"❌ Error fetching transactions: {e}")
+        logger.error(f"[ERROR] Error fetching transactions: {e}")
         return None
 
 
@@ -106,19 +134,19 @@ def get_last_block():
         chain = res.json()
         
         if not chain:
-            logger.error("❌ Chain is empty!")
+            logger.error("[ERROR] Chain is empty!")
             return None
             
         return chain[-1]
 
     except requests.exceptions.ConnectionError:
-        logger.error("❌ Network error: Cannot connect to node")
+        logger.error("[ERROR] Network error: Cannot connect to node")
         return None
     except requests.exceptions.Timeout:
-        logger.error("❌ Network timeout: Connection took too long")
+        logger.error("[ERROR] Network timeout: Connection took too long")
         return None
     except Exception as e:
-        logger.error(f"❌ Error fetching block: {e}")
+        logger.error(f"[ERROR] Error fetching block: {e}")
         return None
 
 
@@ -127,7 +155,7 @@ def get_last_block():
 # =====================
 def mine_block(block, difficulty):
     """Perform proof of work mining"""
-    print(f"⛏️  Mining started... (difficulty: {difficulty})")
+    print(f"[MINING] Mining started... (difficulty: {difficulty})")
     logger.info(f"Mining block with {len(block.transactions)} transactions")
     
     prefix = '0' * difficulty
@@ -159,23 +187,48 @@ def mine_block(block, difficulty):
 def submit_block(block):
     """Submit mined block to network"""
     try:
-        data = {
-            "timestamp": block.timestamp,
-            "transactions": [
-                {
+        # Serialize transactions - handle both Transaction and FileTransaction
+        serialized_txs = []
+        for tx in block.transactions:
+            if hasattr(tx, 'file_hash'):  # FileTransaction
+                tx_dict = {
+                    "sender": tx.sender,
+                    "receiver": tx.receiver,
+                    "file_name": tx.file_name,
+                    "file_hash": tx.file_hash,
+                    "file_size": tx.file_size,
+                    "timestamp": tx.timestamp,
+                    "signature": tx.signature.hex() if isinstance(tx.signature, bytes) else tx.signature,
+                    "sender_public_key": tx.sender_public_key,
+                    "company_id": getattr(tx, 'company_id', None),
+                    "role": getattr(tx, 'role', None),
+                    "transaction_type": "file"
+                }
+            else:  # Regular Transaction
+                tx_dict = {
                     "sender": tx.sender,
                     "receiver": tx.receiver,
                     "amount": tx.amount,
                     "timestamp": tx.timestamp,
-                    "signature": tx.signature.hex() if tx.signature else None,
-                    "sender_public_key": tx.sender_public_key
+                    "signature": tx.signature.hex() if isinstance(tx.signature, bytes) else tx.signature,
+                    "sender_public_key": tx.sender_public_key,
+                    "company_id": getattr(tx, 'company_id', None),
+                    "role": getattr(tx, 'role', None),
+                    "transaction_type": "transfer"
                 }
-                for tx in block.transactions
-            ],
+            serialized_txs.append(tx_dict)
+        
+        data = {
+            "timestamp": block.timestamp,
+            "transactions": serialized_txs,
             "previous_hash": block.previous_hash,
             "nonce": block.nonce,
             "hash": block.hash
         }
+        
+        # Log the data being sent (first transaction only for brevity)
+        print(f"[DEBUG] Submitting block with {len(serialized_txs)} transactions")
+        print(f"[DEBUG] First transaction: {serialized_txs[0] if serialized_txs else 'None'}")
 
         res = requests.post(
             f"{NODE_URL}/submit_block",
@@ -191,13 +244,13 @@ def submit_block(block):
         return True
 
     except requests.exceptions.ConnectionError:
-        logger.error("❌ Network error: Cannot submit block")
+        logger.error("[ERROR] Network error: Cannot submit block")
         return False
     except requests.exceptions.Timeout:
-        logger.error("❌ Network timeout: Submission took too long")
+        logger.error("[ERROR] Network timeout: Submission took too long")
         return False
     except Exception as e:
-        logger.error(f"❌ Error submitting block: {e}")
+        logger.error(f"[ERROR] Error submitting block: {e}")
         return False
 
 
@@ -209,6 +262,12 @@ def start_mining():
     print_header()
     
     try:
+        # Import and initialize blockchain
+        from main import Blockchain
+        miner_blockchain = Blockchain()
+        miner_blockchain.load_from_json("blockchain.json")
+        logger.info(f"Miner blockchain initialized with {len(miner_blockchain.chain)} blocks")
+        
         miner_wallet = Wallet()
         print(f" Miner Wallet: {miner_wallet.get_address()}\n")
         logger.info(f"Miner wallet created: {miner_wallet.get_address()}")
@@ -274,7 +333,7 @@ def start_mining():
 
     except Exception as e:
         logger.critical(f"Critical error: {e}")
-        print(f"\n❌ CRITICAL ERROR: {e}")
+        print(f"\n[CRITICAL ERROR]: {e}")
         print("Press Enter to exit...")
         input()
         sys.exit(1)
@@ -290,7 +349,7 @@ if __name__ == "__main__":
         print("\n\nMiner stopped.")
         sys.exit(0)
     except Exception as e:
-        print(f"\n❌ Fatal error: {e}")
+        print(f"\n[FATAL ERROR]: {e}")
         print("Press Enter to exit...")
         input()
         sys.exit(1)

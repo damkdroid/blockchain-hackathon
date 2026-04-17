@@ -483,7 +483,7 @@ class TransactionHandler {
             sender: this.walletManager.getAddress(),
             receiver: receiver,
             amount: parseFloat(amount),
-            timestamp: Date.now() / 1000
+            timestamp: Math.floor(Date.now() / 1000)
         };
 
         // Sign the transaction
