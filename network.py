@@ -243,11 +243,11 @@ def set_approval_rules():
         if not isinstance(required_approvers, list) or len(required_approvers) == 0:
             return jsonify({"error": "required_approvers must be a non-empty list"}), 400
         
-        # Validate roles
-        valid_roles = {"employee", "manager", "owner"}
+        # Validate roles - Only managers and owners can approve (not employees)
+        valid_approver_roles = {"manager", "owner"}
         for role in required_approvers:
-            if role not in valid_roles:
-                return jsonify({"error": f"Invalid role: {role}"}), 400
+            if role not in valid_approver_roles:
+                return jsonify({"error": f"Invalid approver role: {role}. Only 'manager' or 'owner' can approve transactions. Employees cannot approve."}), 400
         
         company = companies[company_id]
         company.set_approval_rules(threshold, required_approvers)
@@ -391,10 +391,18 @@ def add_transaction():
             
             tx.company_id = company_id
             tx.role = company.get_employee_role(data['sender'])
+            sender_role = tx.role
             
-            # Check if approval is required
-            if company.requires_approval(data['amount']):
+            # Role-based restriction: Employees cannot send amounts above threshold
+            # Only managers and owners can bypass this restriction
+            if sender_role == "employee" and data['amount'] > company.approval_threshold and company.approval_threshold > 0:
+                # Employees sending above threshold MUST go through approval
                 requires_approval = True
+                print(f"[API] Employee {truncate(data['sender'])} sending {data['amount']} (above threshold {company.approval_threshold}) - requires approval")
+            # Check if approval is required by amount
+            elif company.requires_approval(data['amount']):
+                requires_approval = True
+                print(f"[API] Amount {data['amount']} exceeds threshold {company.approval_threshold} - requires approval")
 
         # Validate transaction signature
         print(f"[API] Validating transaction...")
@@ -449,9 +457,11 @@ def submit_for_mining(company_id, tx_id):
         tx = Transaction(
             tx_dict['sender'],
             tx_dict['receiver'],
-            tx_dict['amount']
+            tx_dict['amount'],
+            tx_dict.get('sender_public_key')
         )
         tx.timestamp = tx_dict['timestamp']
+        tx.signature = tx_dict.get('signature')
         tx.company_id = tx_dict.get('company_id')
         tx.role = tx_dict.get('role')
         

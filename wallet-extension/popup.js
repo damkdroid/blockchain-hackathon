@@ -155,13 +155,20 @@ async function approveSignIn() {
         // Get authentication data (signs the message)
         const authData = await walletManager.getAuthData(pendingSignInRequest.challenge);
 
-        // Send response back to content script via tabs.sendMessage
-        chrome.tabs.sendMessage(pendingSignInRequest.tabId, {
-            type: 'WALLET_SIGNIN_RESPONSE',
-            id: pendingSignInRequest.id,
-            success: true,
-            data: authData
-        });
+        // Send response back to BACKGROUND (not directly to tab - popup can't do that)
+        // Background will relay it to the content script
+        try {
+            const response = await chrome.runtime.sendMessage({
+                type: 'WALLET_SIGNIN_RESPONSE',
+                tabId: pendingSignInRequest.tabId,
+                id: pendingSignInRequest.id,
+                success: true,
+                data: authData
+            });
+            console.log('Sign-in response sent to background:', response);
+        } catch (error) {
+            console.error('Failed to send sign-in response to background:', error);
+        }
 
         // Clear pending request
         await clearPendingSignInRequest();
@@ -183,13 +190,18 @@ async function approveSignIn() {
  */
 async function denySignIn() {
     try {
-        // Send error response back to content script via tabs.sendMessage
-        chrome.tabs.sendMessage(pendingSignInRequest.tabId, {
-            type: 'WALLET_SIGNIN_RESPONSE',
-            id: pendingSignInRequest.id,
-            success: false,
-            error: 'User denied sign-in request'
-        });
+        // Send error response back to content script via tabs.sendMessage (Manifest V3 Promise)
+        try {
+            const response = await chrome.tabs.sendMessage(pendingSignInRequest.tabId, {
+                type: 'WALLET_SIGNIN_RESPONSE',
+                id: pendingSignInRequest.id,
+                success: false,
+                error: 'User denied sign-in request'
+            });
+            console.log('Denial response sent successfully');
+        } catch (error) {
+            console.error('Failed to send denial response:', error);
+        }
 
         // Clear pending request
         await clearPendingSignInRequest();

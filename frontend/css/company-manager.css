@@ -31,7 +31,7 @@
 
 .tab-btn:hover {
     color: var(--text-primary);
-    background: rgba(0, 152, 255, 0.05);
+    background: rgba(255, 215, 0, 0.05);
 }
 
 .tab-btn.active {
@@ -91,7 +91,7 @@
 
 .form-input:hover {
     border-color: var(--border-accent);
-    background: rgba(0, 152, 255, 0.02);
+    background: rgba(255, 215, 0, 0.02);
 }
 
 .form-input:focus {
@@ -165,7 +165,7 @@
 }
 
 .company-card.selected {
-    background: rgba(0, 152, 255, 0.08);
+    background: rgba(255, 215, 0, 0.08);
     border-color: var(--accent);
 }
 

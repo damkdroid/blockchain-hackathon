@@ -158,22 +158,26 @@ function getSidebarHTML(activePage) {
 
     return `
         <div class="sidebar-header">
-            <div class="sidebar-avatar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-            </div>
             <div class="sidebar-vault-info">
-                <h3>Blockchain</h3>
-                <span>Ledger System</span>
+                <h2 style="font-family: Poppins; color: gold; margin-left:20px">Sidebar</h2>
             </div>
         </div>
         <nav class="sidebar-nav">
             ${navHTML}
         </nav>
+        <div class="sidebar-bottom">
+            <a href="${isInPages ? 'dashboard.html' : 'pages/dashboard.html'}" class="btn-new-tx">+ New Transaction</a>
+        </div>
+    
     `;
 } function getNavbarHTML(searchPlaceholder = 'Search hash, node...') {
+    const isInPages = window.location.pathname.includes('/pages/');
+    const brandLink = isInPages ? '../index.html' : 'index.html';
 
-
-    return ` `;
+    return `
+        <a href="${brandLink}" class="navbar-brand">                 <i class="fa-solid fa-building-columns fa-lg"></i>
+The Kinetic Ledger</a>
+    `;
 }
 
 document.addEventListener('DOMContentLoaded', () => App.init());

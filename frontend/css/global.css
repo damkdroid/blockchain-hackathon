@@ -9,10 +9,10 @@
     --bg-sidebar: #252525;
     --bg-navbar: rgba(30, 30, 30, 0.85);
 
-    --accent: #0098ff;
-    --accent-dark: #0065a9;
-    --accent-dim: rgba(0, 152, 255, 0.12);
-    --accent-glow: rgba(0, 152, 255, 0.22);
+    --accent: #d1b412;
+    --accent-dark: #ccac00;
+    --accent-dim: rgba(255, 215, 0, 0.12);
+    --accent-glow: rgba(255, 215, 0, 0.22);
     --accent-green: #00e676;
     --accent-red: #ff4c6a;
     --accent-orange: #ff9f43;
@@ -24,7 +24,7 @@
     --text-accent: var(--accent);
 
     --border-color: rgba(255, 255, 255, 0.06);
-    --border-accent: rgba(0, 152, 255, 0.18);
+    --border-accent: rgba(255, 215, 0, 0.18);
 
     --radius-sm: 8px;
     --radius-md: 12px;
@@ -186,8 +186,8 @@ ol {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 20px;
-    font-size: 13px;
+    padding: 12px 24px;
+    font-size: 15px;
     font-weight: 400;
     color: var(--text-secondary);
     transition: all var(--transition-fast);
@@ -204,10 +204,11 @@ ol {
 
 .nav-item.active {
     color: var(--accent);
-    background: rgba(0, 152, 255, 0.05);
+    background: rgba(255, 215, 0, 0.05);
     border-left-color: var(--accent);
     font-weight: 500;
 }
+
 
 .nav-item svg,
 .nav-item .nav-icon {

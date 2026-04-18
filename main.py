@@ -32,6 +32,13 @@ class Wallet:
 # -------------------------
 # COMPANY (Organization with employees)
 # -------------------------
+# Role Hierarchy: Higher rank can satisfy lower rank requirements
+ROLE_HIERARCHY = {
+    "owner": 2,
+    "manager": 1,
+    "employee": 0
+}
+
 class Company:
     def __init__(self, company_id, name, owner_address, owner_public_key):
         """
@@ -91,32 +98,53 @@ class Company:
         if tx_id not in self.pending_approvals:
             return False, "Transaction not found"
         
+        tx_data = self.pending_approvals[tx_id]["tx"]
+        
+        # BLOCK SELF-APPROVAL
+        if approver_address == tx_data["sender"]:
+            return False, "You cannot approve your own transaction"
+        
         if approver_address not in self.employees:
             return False, "Approver not an employee"
         
         approver_role = self.get_employee_role(approver_address)
-        if approver_role not in self.required_approvers:
-            return False, f"Role '{approver_role}' is not required for approval"
+        
+        # Role Rank
+        approver_rank = ROLE_HIERARCHY.get(approver_role, 0)
         
         # Record approval
         self.pending_approvals[tx_id]["approvals"][approver_address] = decision
         
-        # Check if all required roles have approved
-        approved_roles = set()
-        for addr, decision in self.pending_approvals[tx_id]["approvals"].items():
-            if decision == "approved":
-                role = self.get_employee_role(addr)
-                approved_roles.add(role)
-        
-        # Check if we have all required approvals
-        if approved_roles >= set(self.required_approvers):
-            self.pending_approvals[tx_id]["status"] = "approved"
-            return True, "All approvals received - transaction approved!"
-        
         # Check for any rejections
-        if "rejected" in self.pending_approvals[tx_id]["approvals"].values():
+        if decision == "rejected":
             self.pending_approvals[tx_id]["status"] = "rejected"
             return False, "Transaction rejected by an approver"
+        
+        # Check if all required roles are satisfied
+        # A required role is satisfied if someone with that role OR higher has approved
+        satisfied_roles = set()
+        for required_role in self.required_approvers:
+            required_rank = ROLE_HIERARCHY.get(required_role, 0)
+            
+            # Check if any approver has rank >= required_rank
+            for addr, dec in self.pending_approvals[tx_id]["approvals"].items():
+                if dec == "approved":
+                    role = self.get_employee_role(addr)
+                    if ROLE_HIERARCHY.get(role, 0) >= required_rank:
+                        satisfied_roles.add(required_role)
+                        break
+        
+        # Special case: Owner can always approve everything if they are not the sender
+        if approver_role == "owner" and decision == "approved":
+            # If owner approves, it's a super-approval (unless we want to strictly follow roles)
+            # The user said "owner can any", so let's mark it as approved if owner approves.
+            self.pending_approvals[tx_id]["status"] = "approved"
+            return True, "Approved by company owner!"
+
+        # Check if all required roles have been satisfied
+        if satisfied_roles >= set(self.required_approvers):
+            self.pending_approvals[tx_id]["status"] = "approved"
+            return True, "All required approvals received - transaction approved!"
         
         return True, "Approval recorded"
 

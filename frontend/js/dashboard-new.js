@@ -272,7 +272,13 @@ const Dashboard = {
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || 'Transaction failed');
             
-            App.showToast('Transaction submitted successfully!', 'success');
+            // Check if transaction is pending approval
+            if (data.status === 'pending_approval') {
+                App.showToast(`⏳ Transaction pending approval! Awaiting ${data.required_approvers.join(', ')} approval.`, 'info');
+            } else {
+                App.showToast('✓ Transaction submitted successfully!', 'success');
+            }
+            
             document.getElementById('sendRecipient').value = '';
             document.getElementById('sendAmount').value = '';
             await this.loadAllData();

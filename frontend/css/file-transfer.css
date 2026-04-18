@@ -260,7 +260,7 @@
 
 .btn-verify:hover {
     border-color: var(--accent);
-    background: rgba(0, 152, 255, 0.05);
+    background: rgba(255, 215, 0, 0.05);
 }
 
 .verify-status {

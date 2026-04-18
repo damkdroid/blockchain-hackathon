@@ -310,6 +310,17 @@ const CompanyManager = {
             <h4 style="font-size: 14px; font-weight: 500; margin-bottom: 12px; color: var(--text-primary);">
                 Employees (${employeeEntries.length})
             </h4>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                ${employeeEntries.map(([addr, info]) => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 6px;">
+                        <div>
+                            <div style="font-size: 13px; font-weight: 500; color: var(--text-primary);">${this.truncate(addr, 10)}</div>
+                            <div style="font-size: 11px; color: var(--text-tertiary); text-transform: capitalize;">${info.role}</div>
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-tertiary);">${new Date(info.joined_at * 1000).toLocaleDateString()}</div>
+                    </div>
+                `).join('')}
+            </div>
         `;
     },
 
@@ -331,6 +342,12 @@ const CompanyManager = {
 
         if (roles.length === 0) {
             App.showToast('Please select at least one approver role', 'error');
+            return;
+        }
+
+        // Validation: Only managers and owners can approve (not employees)
+        if (roles.includes('employee')) {
+            App.showToast('Employees cannot be required approvers. Only Managers and Owners can approve transactions.', 'error');
             return;
         }
 
@@ -369,6 +386,9 @@ const CompanyManager = {
             return;
         }
 
+        const walletAddress = localStorage.getItem('walletAddress');
+        const isOwner = this.selectedCompany?.owner === walletAddress;
+
         this.pendingList.innerHTML = approvals.map((approval) => {
             // Support both data structures: {transaction: {sender, receiver, amount}} and flat {sender, receiver, amount}
             const tx = approval.transaction || approval;
@@ -399,6 +419,7 @@ const CompanyManager = {
                     <div style="margin-bottom: 12px;">
                         <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">
                             Approvals: ${approvalCount} / ${requiredApprovers.length || 1}
+                            ${isOwner ? '<span style="margin-left: 8px; color: var(--accent-green); font-weight: 500;">👑 Owner (can always approve)</span>' : ''}
                         </div>
                         ${requiredApprovers.map(role => {
                 const hasApproval = Object.values(currentApprovals).includes('approved');

@@ -35,15 +35,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
     else if (request.type === 'WALLET_SIGNIN_RESPONSE') {
         // Response from popup after user confirmed/denied
-        // Relay back to content script
-        chrome.tabs.sendMessage(request.tabId, {
+        // Relay back to content script (using Promise for Manifest V3)
+        console.log('Relaying WALLET_SIGNIN_RESPONSE to tabId:', request.tabId, 'type:', typeof request.tabId);
+        
+        const tabId = parseInt(request.tabId, 10);
+        if (!tabId || isNaN(tabId)) {
+            console.error('Invalid tabId for relay:', request.tabId);
+            sendResponse({ error: 'Invalid tabId' });
+            return false;
+        }
+        
+        chrome.tabs.sendMessage(tabId, {
             type: 'WALLET_SIGNIN_RESPONSE',
-              id: request.id,
+            id: request.id,
             success: request.success,
             data: request.data,
             error: request.error
-        }).catch((err) => {
-            console.error('Failed to relay response:', err);
+        }).then((response) => {
+            console.log('Response relayed successfully to tab:', tabId);
+        }).catch((error) => {
+            console.error('Failed to relay response to tab', tabId, ':', error);
         });
         sendResponse({ received: true });
         return false;

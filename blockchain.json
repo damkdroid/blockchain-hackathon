@@ -1,0 +1,42 @@
+{
+  "chain": [
+    {
+      "timestamp": 1776483113,
+      "transactions": [],
+      "previous_hash": "0",
+      "nonce": 0,
+      "hash": "d65ffb080ff6e6bd11e2454ddba5a1d69d542c69a92c319acd63cdecb2008901"
+    },
+    {
+      "timestamp": 1776483171,
+      "transactions": [
+        {
+          "sender": "SYSTEM",
+          "receiver": "0x5a2ed16bbbd9559f27ad28ac9f1aae64be168625",
+          "amount": 1000,
+          "timestamp": 1776483166,
+          "signature": null,
+          "sender_public_key": null,
+          "company_id": null,
+          "role": null
+        },
+        {
+          "sender": "SYSTEM",
+          "receiver": "0x52c861f0ab4ed59b8122e4c60318e3156cb2cc1742b1c3d7712ac2833cd06360",
+          "amount": 50,
+          "timestamp": 1776483171,
+          "signature": null,
+          "sender_public_key": null,
+          "company_id": null,
+          "role": null
+        }
+      ],
+      "previous_hash": "d65ffb080ff6e6bd11e2454ddba5a1d69d542c69a92c319acd63cdecb2008901",
+      "nonce": 3947,
+      "hash": "0004b6ee0ac379f6c7bfa3f2b44d8da0668ef021aac955d7ca1d14cc8cdae06b"
+    }
+  ],
+  "pending_transactions": [],
+  "difficulty": 3,
+  "mining_reward": 50
+}
