@@ -23,12 +23,7 @@ def calculate_file_hash(file_obj):
 
 companies = {}  # Dictionary: company_id -> Company object
 
-CORS(app, origins=[
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:5174"
-])
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 # =========================================
@@ -175,6 +170,7 @@ def get_companies():
                 "company_id": c.company_id,
                 "name": c.name,
                 "owner": c.owner_address,
+                "employees": list(c.employees.keys()),
                 "employees_count": len(c.employees),
                 "balance": c.balance
             }

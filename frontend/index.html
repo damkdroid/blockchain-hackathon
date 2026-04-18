@@ -1,13 +1,105 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="The Kinetic Ledger — Immutable, transparent, and decentralized record management for the modern enterprise.">
+    <title>The Kinetic Ledger — The Future of Financial Integrity</title>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="js/wallet-api.js"></script>
+</head>
+
+<body>
+    <div class="landing-page">
+
+        <nav class="landing-nav">
+            <a href="index.html" class="landing-nav-brand">
+                <i class="fa-solid fa-building-columns fa-lg"></i>
+                The Kinetic Ledger
+            </a>
+
+        </nav>
+
+        <section class="hero">
+
+            <h1>The Future of <span>Financial Integrity.</span></h1>
+
+            <p class="hero-subtitle">Immutable, transparent, and decentralized record management for the modern
+                enterprise.</p>
+
+            <div class="hero-actions">
+                <a href="pages/dashboard.html" class="btn btn-primary btn-lg">
+                    SIGN IN →
+                </a>
+                <a href="#features" class="btn btn-secondary btn-lg">
+                    About Us
+                </a>
+            </div>
+        </section>
+
+        <section class="features-section" id="features">
+            <h2 class="section-label">Core Infrastructure</h2>
+            <p class="section-desc">Built on principles of absolute security and verifiable truth. Our architecture
+                ensures your ledger remains incorruptible.</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon security">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24"
+                            height="24">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                    </div>
+                    <h3>Cryptographic Security</h3>
+                    <p>Military-grade encryption securing every transaction. Unauthorized access is mathematically
+                        impossible.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon trace">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24"
+                            height="24">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                        </svg>
+                    </div>
+                    <h3>Absolute Traceability</h3>
+                    <p>End-to-end audit trails. Every change is logged, time-stamped, and permanently bound to the
+                        genesis block.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon governance">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24"
+                            height="24">
+                            <circle cx="12" cy="5" r="3" />
+                            <circle cx="5" cy="19" r="3" />
+                            <circle cx="19" cy="19" r="3" />
+                            <line x1="12" y1="8" x2="5" y2="16" />
+                            <line x1="12" y1="8" x2="19" y2="16" />
+                        </svg>
+                    </div>
+                    <h3>Decentralized Governance</h3>
+                    <p>Smart contract protocols enforce network rules autonomously, eliminating centralized points of
+                        failure.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="protocol-section">
+            <h2>Protocol Mechanics</h2>
+            <p>A visual representation of the Etheris consensus algorithm and data flow.</p>
+
+            <div class="protocol-canvas-wrapper">
+                <canvas id="protocolCanvas"></canvas>
+            </div>
+        </section>
+
+    </div>
+    <script src="js/global.js"></script>
+    <script src="js/landing.js"></script>
+</body>
 </html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Kinetic Ledger Company Manager — Create and manage organizations with approval workflows.">
+    <title>Company Manager — The Kinetic Ledger</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/company-manager.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="../js/wallet-api.js"></script>
+</head>
+
+<body>
+    <div class="app-layout">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <header class="navbar" id="navbar"></header>
+
+            <div class="page-content">
+                <div class="page-header">
+                    <h1>Company Manager</h1>
+                    <p>Create and manage organizations with approval workflows.</p>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="tabs-container">
+                    <div class="tabs-nav">
+                        <button class="tab-btn active" data-tab="create">
+                            <i class="fas fa-building"></i> Create Company
+                        </button>
+                        <button class="tab-btn" data-tab="manage">
+                            <i class="fas fa-list"></i> My Companies
+                        </button>
+                        <button class="tab-btn" data-tab="employees">
+                            <i class="fas fa-users"></i> Employees
+                        </button>
+                        <button class="tab-btn" data-tab="approvals">
+                            <i class="fas fa-cog"></i> Approval Rules
+                        </button>
+                        <button class="tab-btn" data-tab="pending">
+                            <i class="fas fa-bell"></i> Pending Approvals
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tabs-content">
+                    <!-- Create Company Tab -->
+                    <div class="tab-pane active" id="tab-create">
+                        <div class="form-group">
+                            <label for="companyName">Company Name</label>
+                            <input type="text" id="companyName" placeholder="Company Name.." class="form-input">
+                            <p class="form-hint">You'll be set as the owner of this company. You can add employees and
+                                set approval rules.</p>
+                        </div>
+                        <button id="btnCreateCompany" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create Company
+                        </button>
+                        <div id="statusCreate" class="status-message"></div>
+                    </div>
+
+                    <!-- My Companies Tab -->
+                    <div class="tab-pane" id="tab-manage">
+                        <div id="companiesList" class="companies-list">
+                            <p class="empty-state">No companies yet. Create one to get started.</p>
+                        </div>
+                    </div>
+
+                    <!-- Employees Tab -->
+                    <div class="tab-pane" id="tab-employees">
+                        <div id="employeeForm" class="form-section">
+                            <div class="form-group">
+                                <label for="selectedCompanyDisplay">Selected Company</label>
+                                <input type="text" id="selectedCompanyDisplay" class="form-input" disabled
+                                    placeholder="Select from My Companies tab">
+                            </div>
+                            <div class="form-group">
+                                <label for="employeeAddress">Employee Address</label>
+                                <input type="text" id="employeeAddress" placeholder="0x7F...9A2C" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="employeeRole">Role</label>
+                                <select id="employeeRole" class="form-input">
+                                    <option value="employee">Employee</option>
+                                    <option value="manager">Manager</option>
+                                    <option value="approver">Approver</option>
+                                </select>
+                            </div>
+                            <button id="btnAddEmployee" class="btn btn-primary">
+                                <i class="fas fa-user-plus"></i> Add Employee
+                            </button>
+                            <div id="statusEmployee" class="status-message"></div>
+                        </div>
+                        <div id="employeesList" class="employees-list">
+                            <p class="empty-state">Select a company to view employees.</p>
+                        </div>
+                    </div>
+
+                    <!-- Approval Rules Tab -->
+                    <div class="tab-pane" id="tab-approvals">
+                        <div id="approvalForm" class="form-section">
+                            <div class="form-group">
+                                <label for="selectedCompanyApproval">Selected Company</label>
+                                <input type="text" id="selectedCompanyApproval" class="form-input" disabled
+                                    placeholder="Select from My Companies tab">
+                            </div>
+                            <div class="form-group">
+                                <label for="approvalThreshold">Approval Threshold</label>
+                                <input type="number" id="approvalThreshold" placeholder="0.00" class="form-input"
+                                    min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Required Approver Roles</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" value="employee" class="approval-role">
+                                        Employee
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" value="manager" class="approval-role">
+                                        Manager
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" value="approver" class="approval-role">
+                                        Approver
+                                    </label>
+                                </div>
+                            </div>
+                            <button id="btnSetApprovalRules" class="btn btn-primary">
+                                <i class="fas fa-lock"></i> Set Approval Rules
+                            </button>
+                            <div id="statusApproval" class="status-message"></div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Approvals Tab -->
+                    <div class="tab-pane" id="tab-pending">
+                        <div id="pendingList" class="pending-approvals-list">
+                            <p class="empty-state">No pending approvals. Select a company to view pending transactions.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="../js/wallet-api.js"></script>
+    <script src="../js/global.js"></script>
+    <script src="../js/company-manager.js"></script>
+</body>
+</html>

@@ -73,7 +73,7 @@ window.walletExtension = {
 
             // Send sign-in request to content script
             window.postMessage({
-                type: 'WALLET_SIGNIN_REQUEST',
+                type: 'WALLET_SIGNIN',
                 challenge: message,
                 origin: window.location.origin,
                 id: requestId

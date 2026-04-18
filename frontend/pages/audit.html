@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Audit Trail — Forensic view of cryptographic provenance and block history.">
+    <title>Audit Trail — The Kinetic Ledger</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/ledger.css">
+    <link rel="stylesheet" href="../css/audit.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-layout">
+
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <header class="navbar" id="navbar"></header>
+
+            <div class="page-content">
+                <div class="page-header">
+                    <h1>Audit Trail</h1>
+                    <p>Forensic view of cryptographic provenance. Chain of custody.</p>
+                </div>
+
+                <div class="audit-container">
+                    <aside class="audit-left"></aside>
+
+                    <section class="audit-timeline" id="auditTimeline">
+                        <!-- timeline items injected by JS -->
+                    </section>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="../js/global.js"></script>
+    <script>
+        document.getElementById('sidebar').innerHTML = getSidebarHTML('audit');
+        document.getElementById('navbar').innerHTML = getNavbarHTML('Search hash, entity, or block...');
+    </script>
+    <script src="../js/audit.js"></script>
+</body>
+
+</html>

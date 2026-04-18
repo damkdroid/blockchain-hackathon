@@ -1,0 +1,317 @@
+/* File Transfer Styles */
+
+.file-transfer-section {
+    margin-top: 2rem;
+}
+
+.file-tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+
+.file-tab-btn {
+    padding: 0.75rem 1rem;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.file-tab-btn:hover {
+    color: var(--text-primary);
+}
+
+.file-tab-btn.active {
+    color: var(--text-primary);
+    border-bottom-color: var(--accent);
+}
+
+.file-tab-content {
+    display: none;
+}
+.file-tab-content.active {
+    display: block;
+}
+
+
+
+/* Send File Form */
+.file-send-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+}
+
+.file-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.file-form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.file-form-group input,
+.file-form-group select {
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    font-size: 13px;
+    transition: all var(--transition-fast);
+}
+
+.file-form-group input:hover,
+.file-form-group select:hover {
+    border-color: var(--border-accent);
+}
+
+.file-form-group input:focus,
+.file-form-group select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+    outline: none;
+}
+
+.file-form-group input::placeholder {
+    color: var(--text-tertiary);
+}
+
+.file-name-display {
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 12px;
+    display: none;
+}
+
+.file-form-hint {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-top: -0.5rem;
+}
+
+.btn-send-file {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    background: var(--accent);
+    color: black;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-send-file:hover:not(:disabled) {
+    background: var(--accent-dark);
+    transform: translateY(-2px);
+}
+
+.btn-send-file:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.status-message {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 12px;
+    display: none;
+    animation: slideIn 0.3s ease;
+}
+
+.status-message.show {
+    display: block;
+}
+
+.status-message.success {
+    background: rgba(0, 230, 118, 0.1);
+    color: var(--accent-green);
+    border: 1px solid rgba(0, 230, 118, 0.3);
+}
+
+.status-message.error {
+    background: rgba(255, 76, 106, 0.1);
+    color: var(--accent-red);
+    border: 1px solid rgba(255, 76, 106, 0.3);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Received Files List */
+.received-files-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.file-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: all var(--transition-normal);
+}
+
+.file-card:hover {
+    border-color: var(--accent);
+    background: var(--bg-card-hover);
+}
+
+.file-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.file-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+}
+
+.file-sender {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.file-meta {
+    text-align: right;
+}
+
+.file-size {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 0 0 4px;
+}
+
+.file-status {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin: 0;
+}
+
+.file-hash {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-family: 'Monaco', 'Courier New', monospace;
+    padding: 0.5rem;
+    background: var(--bg-input);
+    border-radius: 4px;
+    word-break: break-all;
+}
+
+.file-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.file-input-verify {
+    display: none;
+}
+
+.btn-verify {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-md);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-verify:hover {
+    border-color: var(--accent);
+    background: rgba(0, 152, 255, 0.05);
+}
+
+.verify-status {
+    font-size: 12px;
+    padding: 0.5rem;
+    border-radius: 4px;
+    display: none;
+}
+
+.verify-status.verifying {
+    display: block;
+    color: var(--accent);
+    background: var(--accent-dim);
+}
+
+.verify-status.success {
+    display: block;
+    color: var(--accent-green);
+    background: rgba(0, 230, 118, 0.1);
+}
+
+.verify-status.error {
+    display: block;
+    color: var(--accent-red);
+    background: rgba(255, 76, 106, 0.1);
+    white-space: pre-wrap;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .file-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .file-meta {
+        text-align: left;
+    }
+
+    .file-actions {
+        flex-direction: column;
+    }
+
+    .btn-verify {
+        width: 100%;
+    }
+}

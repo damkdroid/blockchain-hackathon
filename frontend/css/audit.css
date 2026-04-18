@@ -1,0 +1,92 @@
+/* Minimal audit timeline styles */
+.audit-container {
+    display: grid;
+    grid-template-columns: 260px 1fr 220px;
+    gap: 28px;
+    align-items: start;
+}
+
+.audit-left .audit-overview {
+    position: sticky;
+    top: 100px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    border-radius: var(--radius-md);
+}
+
+.audit-block-pill {
+    margin: 12px 0;
+    padding: 12px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+.audit-timeline {
+    position: relative;
+    padding: 20px 0 60px 40px;
+}
+
+.audit-timeline::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.03));
+}
+
+.timeline-item {
+    position: relative;
+    margin: 36px 0;
+    padding-left: 56px;
+}
+
+.timeline-item .marker {
+    position: absolute;
+    left: -4px;
+    top: 6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 3px solid var(--bg-primary);
+    box-shadow: 0 0 8px var(--accent-glow);
+    background: var(--accent);
+}
+
+.timeline-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    max-width: 720px;
+}
+
+.timeline-meta {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-bottom: 8px;
+}
+
+.audit-right .audit-legend {
+    position: sticky;
+    top: 100px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 16px;
+    border-radius: var(--radius-md);
+}
+
+.legend-row { margin: 8px 0; color: var(--text-secondary); display:flex;align-items:center;gap:10px }
+.dot { width:12px;height:12px;border-radius:3px;display:inline-block }
+.bg-accent { background: var(--accent) }
+.bg-green { background: var(--accent-green) }
+.bg-purple { background: var(--accent-purple) }
+
+@media (max-width: 900px) {
+    .audit-container { grid-template-columns: 1fr; padding: 0 16px }
+    .audit-left, .audit-right { display:none }
+    .audit-timeline { padding-left: 12px }
+}

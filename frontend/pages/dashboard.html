@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kinetic Ledger Dashboard — Access all blockchain features and management tools.">
+    <title>Dashboard — The Kinetic Ledger</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .dashboard-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+            padding-bottom: 0;
+        }
+        
+        .dashboard-tab-btn {
+            padding: 0.75rem 1rem;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        
+        .dashboard-tab-btn:hover {
+            color: var(--text-primary);
+        }
+        
+        .dashboard-tab-btn.active {
+            color: var(--text-primary);
+            border-bottom-color: var(--accent);
+        }
+        
+        .tab-content {
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--bg-primary);
+        }
+        
+        .btn-primary {
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-bright);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .status-message {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .status-message.error {
+            background: rgba(255, 0, 0, 0.1);
+            color: var(--accent-red);
+            border: 1px solid var(--accent-red);
+            display: block;
+        }
+        
+        .status-message.success {
+            background: rgba(0, 255, 0, 0.1);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+            display: block;
+        }
+        
+        .status-message.info {
+            background: rgba(0, 200, 255, 0.1);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            display: block;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-tertiary);
+            font-size: 14px;
+        }
+        
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+        
+        .text-tertiary {
+            color: var(--text-tertiary);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="main-content">
+            <header class="navbar" id="navbar"></header>
+
+            <div class="page-content">
+                <div class="dashboard-stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(0, 152, 255, 0.1); color: var(--accent);">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Wallet Address</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="stat-value" id="walletAddr" style="font-size: 14px; font-family: monospace;">Loading...</span>
+                                <button class="copy-btn" id="copyAddress" title="Copy Address">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(0, 230, 118, 0.1); color: var(--accent-green);">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Balance</span>
+                            <span class="stat-value" id="userBalance">0.0000 KLT</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(255, 159, 67, 0.1); color: var(--accent-orange);">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Pending Txs</span>
+                            <span class="stat-value" id="pendingCount">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(168, 85, 247, 0.1); color: var(--accent-purple);">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Txs</span>
+                            <span class="stat-value" id="totalTxCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Tabs -->
+                <div class="dashboard-tabs">
+                    <button class="dashboard-tab-btn active" data-tab="send">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
+                    <button class="dashboard-tab-btn" data-tab="files">
+                        <i class="fas fa-file"></i> Send Files
+                    </button>
+                    <button class="dashboard-tab-btn" data-tab="received">
+                        <i class="fas fa-inbox"></i> Received
+                    </button>
+                    <button class="dashboard-tab-btn" data-tab="history">
+                        <i class="fas fa-history"></i> History
+                    </button>
+                    <button class="dashboard-tab-btn" data-tab="chain">
+                        <i class="fas fa-link"></i> Blockchain
+                    </button>
+
+                </div>
+
+                <!-- Tab Content -->
+                <div id="dashboardTabContent"></div>
+            </div>
+
+            <div id="statusOverlay"></div>
+        </main>
+    </div>
+
+    <script src="../js/wallet-api.js"></script>
+    <script src="../js/global.js"></script>
+    <script src="../js/dashboard-new.js"></script>
+    <script>
+        // Display wallet address
+        const session = WalletAPI?.getSession?.();
+        if (session?.address) {
+            document.getElementById('walletAddr').textContent = `Wallet: ${session.address.slice(0, 10)}...${session.address.slice(-6)}`;
+        }
+    </script>
+</body>
+</html>
