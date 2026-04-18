@@ -245,16 +245,18 @@ const Dashboard = {
                 role: 'employee'
             };
 
-            // Try wallet signing
+            // Try wallet signing (only needed for personal transactions)
             let signature = '';
-            try {
-                if (window.walletExtension) {
-                    const challenge = JSON.stringify(txData);
-                    const result = await WalletAPI.signIn();
-                    signature = result.signature || '';
+            if (!this.selectedCompanyId) {
+                try {
+                    if (window.walletExtension) {
+                        const challenge = JSON.stringify(txData);
+                        const result = await WalletAPI.signIn();
+                        signature = result.signature || '';
+                    }
+                } catch (signErr) {
+                    console.warn('Wallet signing skipped:', signErr.message);
                 }
-            } catch (signErr) {
-                console.warn('Wallet signing skipped:', signErr.message);
             }
 
             const payload = {
@@ -467,9 +469,14 @@ const Dashboard = {
             <div class="tab-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                     <h3>Transaction History</h3>
-                    <button class="btn-secondary" onclick="Dashboard.exportToCSV()" style="font-size: 12px;">
-                        <i class="fas fa-download"></i> Export CSV
-                    </button>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn-secondary" onclick="Dashboard.exportToCSV()" style="font-size: 12px;">
+                            <i class="fas fa-file-csv"></i> Export CSV
+                        </button>
+                        <button class="btn-primary" onclick="Dashboard.exportToPDF()" style="font-size: 12px;">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </button>
+                    </div>
                 </div>
                 <div id="historyList"></div>
             </div>
@@ -539,6 +546,57 @@ const Dashboard = {
         link.click();
         document.body.removeChild(link);
         App.showToast('Exporting transactions to CSV...', 'success');
+    },
+
+    exportToPDF() {
+        if (this.userTxs.length === 0) {
+            App.showToast('No transactions to export', 'info');
+            return;
+        }
+
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(18);
+            doc.text("Transaction Statement", 14, 22);
+            
+            doc.setFontSize(11);
+            doc.text(`Wallet: ${this.walletAddress}`, 14, 30);
+            doc.text(`Date Generated: ${new Date().toLocaleString()}`, 14, 36);
+
+            const tableColumn = ["Date", "Type", "Counterparty", "Amount", "Status"];
+            const tableRows = [];
+
+            this.userTxs.forEach(tx => {
+                const isSent = tx.sender === this.walletAddress;
+                const type = isSent ? 'DEBIT' : 'CREDIT';
+                const counterparty = isSent ? tx.receiver : tx.sender;
+                const date = new Date((tx.timestamp || 0) * 1000).toLocaleString();
+                
+                tableRows.push([
+                    date,
+                    type,
+                    this.truncate(counterparty, 12),
+                    `${isSent ? '-' : '+'}${parseFloat(tx.amount || 0).toFixed(4)}`,
+                    tx.confirmed ? 'Confirmed' : 'Pending'
+                ]);
+            });
+
+            doc.autoTable({
+                startY: 45,
+                head: [tableColumn],
+                body: tableRows,
+                theme: 'striped',
+                headStyles: { fillColor: [209, 180, 18] }, // gold color
+            });
+
+            doc.save(`transactions_${new Date().getTime()}.pdf`);
+            App.showToast('Exporting transactions to PDF...', 'success');
+        } catch (e) {
+            console.error(e);
+            App.showToast('Error generating PDF', 'error');
+        }
     },
 
     // ===== CHAIN TAB =====

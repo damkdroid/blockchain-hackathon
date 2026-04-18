@@ -395,14 +395,12 @@ def add_transaction():
             
             # Role-based restriction: Employees cannot send amounts above threshold
             # Only managers and owners can bypass this restriction
-            if sender_role == "employee" and data['amount'] > company.approval_threshold and company.approval_threshold > 0:
-                # Employees sending above threshold MUST go through approval
-                requires_approval = True
-                print(f"[API] Employee {truncate(data['sender'])} sending {data['amount']} (above threshold {company.approval_threshold}) - requires approval")
-            # Check if approval is required by amount
-            elif company.requires_approval(data['amount']):
-                requires_approval = True
-                print(f"[API] Amount {data['amount']} exceeds threshold {company.approval_threshold} - requires approval")
+            if sender_role in ["owner", "manager"]:
+                requires_approval = False
+            elif sender_role == "employee":
+                if company.requires_approval(data['amount']):
+                    requires_approval = True
+                    print(f"[API] Employee {truncate(data['sender'])} sending {data['amount']} (above threshold {company.approval_threshold}) - requires approval")
 
         # Validate transaction signature
         print(f"[API] Validating transaction...")
