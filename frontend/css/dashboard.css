@@ -148,7 +148,7 @@
     margin-bottom: 4px;
 }
 
-.transfer-card > p {
+.transfer-card>p {
     font-size: 12px;
     color: var(--text-secondary);
     margin-bottom: 20px;

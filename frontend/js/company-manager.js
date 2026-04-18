@@ -306,22 +306,7 @@ const CompanyManager = {
             employeeEntries = Object.entries(employees);
         }
 
-        this.employeesList.innerHTML = `
-            <h4 style="font-size: 14px; font-weight: 500; margin-bottom: 12px; color: var(--text-primary);">
-                Employees (${employeeEntries.length})
-            </h4>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                ${employeeEntries.map(([addr, info]) => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 6px;">
-                        <div>
-                            <div style="font-size: 13px; font-weight: 500; color: var(--text-primary);">${this.truncate(addr, 10)}</div>
-                            <div style="font-size: 11px; color: var(--text-tertiary); text-transform: capitalize;">${info.role}</div>
-                        </div>
-                        <div style="font-size: 11px; color: var(--text-tertiary);">${new Date(info.joined_at * 1000).toLocaleDateString()}</div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
+        this.employeesList.innerHTML = ``;
     },
 
     async handleSetApprovalRules() {

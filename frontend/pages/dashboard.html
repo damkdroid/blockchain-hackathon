@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,7 +18,7 @@
             overflow-x: auto;
             padding-bottom: 0;
         }
-        
+
         .dashboard-tab-btn {
             padding: 0.75rem 1rem;
             background: none;
@@ -30,23 +31,22 @@
             transition: all 0.2s ease;
             white-space: nowrap;
         }
-        
+
         .dashboard-tab-btn:hover {
             color: var(--text-primary);
         }
-        
+
         .dashboard-tab-btn.active {
             color: var(--text-primary);
             border-bottom-color: var(--accent);
         }
-        
-        .tab-content {
-        }
-        
+
+        .tab-content {}
+
         .form-group {
             margin-bottom: 1rem;
         }
-        
+
         .form-group label {
             display: block;
             font-size: 13px;
@@ -54,7 +54,7 @@
             color: var(--text-secondary);
             margin-bottom: 0.5rem;
         }
-        
+
         .form-input {
             width: 100%;
             padding: 0.75rem;
@@ -66,13 +66,13 @@
             font-family: inherit;
             box-sizing: border-box;
         }
-        
+
         .form-input:focus {
             outline: none;
             border-color: var(--accent);
             background: var(--bg-primary);
         }
-        
+
         .btn-primary {
             padding: 0.75rem 1.5rem;
             background: var(--accent);
@@ -83,12 +83,11 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        
+
         .btn-primary:hover {
-            background: var(--accent-bright);
             transform: translateY(-1px);
         }
-        
+
         .btn-secondary {
             padding: 0.5rem 1rem;
             background: var(--bg-secondary);
@@ -99,55 +98,56 @@
             cursor: pointer;
             font-size: 13px;
         }
-        
+
         .btn-secondary:hover {
             background: var(--bg-tertiary);
         }
-        
+
         .status-message {
             margin-top: 1rem;
             padding: 0.75rem;
             border-radius: 6px;
             display: none;
         }
-        
+
         .status-message.error {
             background: rgba(255, 0, 0, 0.1);
             color: var(--accent-red);
             border: 1px solid var(--accent-red);
             display: block;
         }
-        
+
         .status-message.success {
             background: rgba(0, 255, 0, 0.1);
             color: var(--accent-green);
             border: 1px solid var(--accent-green);
             display: block;
         }
-        
+
         .status-message.info {
             background: rgba(0, 200, 255, 0.1);
             color: var(--accent);
             border: 1px solid var(--accent);
             display: block;
         }
-        
+
         .empty-state {
             text-align: center;
             padding: 2rem;
             color: var(--text-tertiary);
             font-size: 14px;
         }
-        
+
         .text-secondary {
             color: var(--text-secondary);
         }
-        
+
         .text-tertiary {
             color: var(--text-tertiary);
         }
     </style>
 </head>
+
 <body>
     <div class="app-layout">
         <aside class="sidebar" id="sidebar"></aside>
@@ -164,7 +164,8 @@
                         <div class="stat-info">
                             <span class="stat-label">Wallet Address</span>
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <span class="stat-value" id="walletAddr" style="font-size: 14px; font-family: monospace;">Loading...</span>
+                                <span class="stat-value" id="walletAddr"
+                                    style="font-size: 14px; font-family: monospace;">Loading...</span>
                                 <button class="copy-btn" id="copyAddress" title="Copy Address">
                                     <i class="fas fa-copy"></i>
                                 </button>
@@ -181,7 +182,8 @@
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(255, 159, 67, 0.1); color: var(--accent-orange);">
+                        <div class="stat-icon"
+                            style="background: rgba(255, 159, 67, 0.1); color: var(--accent-orange);">
                             <i class="fas fa-clock"></i>
                         </div>
                         <div class="stat-info">
@@ -190,7 +192,8 @@
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon" style="background: rgba(168, 85, 247, 0.1); color: var(--accent-purple);">
+                        <div class="stat-icon"
+                            style="background: rgba(168, 85, 247, 0.1); color: var(--accent-purple);">
                             <i class="fas fa-exchange-alt"></i>
                         </div>
                         <div class="stat-info">
@@ -241,4 +244,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -2789,3 +2789,188 @@
 2026-04-18 10:33:24,023 - [INFO] - Block mined successfully in 0.32s after 11,611 attempts
 2026-04-18 10:33:24,047 - [ERROR] - [ERROR] Error submitting block: 400 Client Error: BAD REQUEST for url: http://127.0.0.1:5000/submit_block
 2026-04-18 10:33:25,171 - [INFO] - Mining stopped by user
+2026-04-18 10:48:04,829 - [INFO] - Miner started
+2026-04-18 10:48:04,830 - [INFO] - Miner blockchain initialized with 1 blocks
+2026-04-18 10:48:07,010 - [INFO] - Miner wallet created: 0x3f1785195cad1de78f609e9a1061eee12261e0115bf99989cef528137b0965a3
+2026-04-18 10:48:07,021 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:48:12,026 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:48:17,032 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:48:22,038 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:48:27,043 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:48:32,063 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:48:37,085 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:48:42,098 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:48:47,120 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:48:52,146 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:48:57,152 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:49:02,158 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:49:07,163 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:49:12,183 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:49:17,205 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:49:22,211 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:49:27,217 - [INFO] - Fetched 1 pending transactions
+2026-04-18 10:49:27,224 - [INFO] - Mining block with 2 transactions
+2026-04-18 10:49:27,310 - [INFO] - Block mined successfully in 0.08s after 3,251 attempts
+2026-04-18 10:49:27,319 - [INFO] - Block submitted successfully: {'message': 'Block accepted'}
+2026-04-18 10:49:29,325 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:49:34,330 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:49:39,358 - [INFO] - Fetched 1 pending transactions
+2026-04-18 10:49:39,364 - [INFO] - Mining block with 2 transactions
+2026-04-18 10:49:39,573 - [INFO] - Block mined successfully in 0.21s after 9,228 attempts
+2026-04-18 10:49:39,581 - [INFO] - Block submitted successfully: {'message': 'Block accepted'}
+2026-04-18 10:49:41,607 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:49:46,612 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:49:51,618 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:49:56,625 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:50:01,644 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:50:06,664 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:50:11,672 - [INFO] - Fetched 1 pending transactions
+2026-04-18 10:50:11,686 - [INFO] - Mining block with 2 transactions
+2026-04-18 10:50:11,788 - [INFO] - Block mined successfully in 0.10s after 4,285 attempts
+2026-04-18 10:50:11,806 - [INFO] - Block submitted successfully: {'message': 'Block accepted'}
+2026-04-18 10:50:13,832 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:50:18,838 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:50:23,855 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:50:28,882 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:50:33,888 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:50:38,894 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:50:43,900 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:50:48,906 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:50:53,912 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:50:58,917 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:51:03,941 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:51:08,947 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:51:13,952 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:51:18,976 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:51:23,991 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:51:29,013 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:51:34,019 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:51:39,024 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:51:44,063 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:51:49,080 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:51:54,084 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:51:56,466 - [INFO] - Mining stopped by user
+2026-04-18 10:51:57,780 - [INFO] - Miner started
+2026-04-18 10:51:57,781 - [INFO] - Miner blockchain initialized with 4 blocks
+2026-04-18 10:52:02,783 - [INFO] - Miner wallet created: 0x2bcebe98514fe3cfab5a0f3859c46bbdedf18d75c7781cffc3fbfe763c093744
+2026-04-18 10:52:02,792 - [INFO] - Fetched 1 pending transactions
+2026-04-18 10:52:02,798 - [INFO] - Mining block with 2 transactions
+2026-04-18 10:52:03,077 - [INFO] - Block mined successfully in 0.28s after 17,026 attempts
+2026-04-18 10:52:03,097 - [INFO] - Block submitted successfully: {'message': 'Block accepted'}
+2026-04-18 10:52:05,115 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:52:10,121 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:52:15,126 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:52:20,143 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:52:25,150 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:52:30,157 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:52:35,183 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:52:40,188 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:52:45,194 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:52:50,225 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:52:55,230 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:53:00,236 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:53:05,242 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:53:10,248 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:53:15,253 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:53:20,263 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:53:25,269 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:53:30,275 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:53:35,281 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:53:40,288 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:53:45,301 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:53:52,346 - [ERROR] - [ERROR] Network error: Cannot connect to node
+2026-04-18 10:53:57,353 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:54:00,970 - [INFO] - Mining stopped by user
+2026-04-18 10:54:02,201 - [INFO] - Miner started
+2026-04-18 10:54:02,202 - [INFO] - Miner blockchain initialized with 1 blocks
+2026-04-18 10:54:02,859 - [INFO] - Miner wallet created: 0x1d351ecf852e116a2954a4c976fb0b6f531989fc61d3aacbbd730c48d9349ea0
+2026-04-18 10:54:02,867 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:54:07,875 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:54:12,904 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:54:17,910 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:54:22,927 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:54:27,932 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:54:32,938 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:54:37,946 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:54:42,951 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:54:47,957 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:54:52,963 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:54:57,972 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:55:02,978 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:55:07,984 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:55:12,996 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:55:18,002 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:55:23,030 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:55:28,059 - [INFO] - Fetched 1 pending transactions
+2026-04-18 10:55:28,065 - [INFO] - Mining block with 2 transactions
+2026-04-18 10:55:28,109 - [INFO] - Block mined successfully in 0.04s after 1,926 attempts
+2026-04-18 10:55:28,117 - [INFO] - Block submitted successfully: {'message': 'Block accepted'}
+2026-04-18 10:55:30,124 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:55:35,142 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:55:40,148 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:55:45,153 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:55:50,172 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:55:55,179 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:56:00,185 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:56:05,191 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:56:10,197 - [INFO] - Fetched 1 pending transactions
+2026-04-18 10:56:10,202 - [INFO] - Mining block with 2 transactions
+2026-04-18 10:56:10,218 - [INFO] - Block mined successfully in 0.02s after 547 attempts
+2026-04-18 10:56:10,227 - [INFO] - Block submitted successfully: {'message': 'Block accepted'}
+2026-04-18 10:56:12,233 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:56:17,259 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:56:22,284 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:56:27,291 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:56:32,299 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:56:37,317 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:56:42,323 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:56:47,347 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:56:52,353 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:56:57,372 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:57:02,379 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:57:07,385 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:57:12,390 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:57:17,396 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:57:22,402 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:57:27,408 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:57:32,421 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:57:37,444 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:57:42,463 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:57:47,468 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:57:52,500 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:57:57,527 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:58:02,547 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:58:07,553 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:58:12,579 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:58:17,584 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:58:22,591 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:58:27,615 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:58:32,621 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:58:37,626 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:58:42,647 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:58:47,667 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:58:52,672 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:58:57,678 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:59:02,696 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:59:07,700 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:59:12,729 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:59:17,747 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:59:22,768 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:59:27,773 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:59:32,780 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:59:37,786 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:59:42,808 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:59:47,825 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:59:52,842 - [INFO] - Fetched 0 pending transactions
+2026-04-18 10:59:57,872 - [INFO] - Fetched 0 pending transactions
+2026-04-18 11:00:02,896 - [INFO] - Fetched 0 pending transactions
+2026-04-18 11:00:07,901 - [INFO] - Fetched 0 pending transactions
+2026-04-18 11:00:12,916 - [INFO] - Fetched 0 pending transactions
+2026-04-18 11:00:17,921 - [INFO] - Fetched 0 pending transactions
+2026-04-18 11:00:22,935 - [INFO] - Fetched 0 pending transactions
+2026-04-18 11:00:27,939 - [INFO] - Fetched 0 pending transactions
+2026-04-18 11:00:32,970 - [INFO] - Fetched 0 pending transactions
+2026-04-18 11:00:37,997 - [INFO] - Fetched 0 pending transactions
+2026-04-18 11:00:43,001 - [INFO] - Fetched 0 pending transactions
+2026-04-18 11:00:48,006 - [INFO] - Fetched 0 pending transactions
+2026-04-18 11:00:55,036 - [INFO] - Mining stopped by user
