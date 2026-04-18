@@ -363,6 +363,7 @@ const CompanyManager = {
                     company_id: this.selectedCompany.company_id,
                     threshold: threshold,
                     required_approvers: roles,
+                    requester_address: walletAddress
                 }),
             });
             if (!res.ok) {

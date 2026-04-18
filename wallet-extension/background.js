@@ -51,10 +51,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             success: request.success,
             data: request.data,
             error: request.error
-        }).then((response) => {
-            console.log('Response relayed successfully to tab:', tabId);
-        }).catch((error) => {
-            console.error('Failed to relay response to tab', tabId, ':', error);
+        }, (response) => {
+            if (chrome.runtime.lastError) {
+                console.error('Failed to relay response to tab', tabId, ':', chrome.runtime.lastError);
+            } else {
+                console.log('Response relayed successfully to tab:', tabId);
+            }
         });
         sendResponse({ received: true });
         return false;

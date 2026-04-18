@@ -245,18 +245,16 @@ const Dashboard = {
                 role: 'employee'
             };
 
-            // Try wallet signing (only needed for personal transactions)
+            // Try wallet signing
             let signature = '';
-            if (!this.selectedCompanyId) {
-                try {
-                    if (window.walletExtension) {
-                        const challenge = JSON.stringify(txData);
-                        const result = await WalletAPI.signIn();
-                        signature = result.signature || '';
-                    }
-                } catch (signErr) {
-                    console.warn('Wallet signing skipped:', signErr.message);
+            try {
+                if (window.walletExtension) {
+                    const challenge = JSON.stringify(txData);
+                    const result = await WalletAPI.signIn();
+                    signature = result.signature || '';
                 }
+            } catch (signErr) {
+                console.warn('Wallet signing skipped:', signErr.message);
             }
 
             const payload = {
