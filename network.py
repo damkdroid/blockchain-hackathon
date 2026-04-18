@@ -1,9 +1,8 @@
 from flask import Flask, request, jsonify, send_file
-from main import Blockchain, Transaction, Block, Company, FileTransaction, CompanyActionTransaction
+from main import Blockchain, Transaction, Block, Company, FileTransaction
 from flask_cors import CORS
 import hashlib
 import os
-import time
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -20,6 +19,9 @@ def calculate_file_hash(file_obj):
         sha256_hash.update(chunk)
         file_size += len(chunk)
     return sha256_hash.hexdigest(), file_size
+
+
+companies = {}  # Dictionary: company_id -> Company object
 
 CORS(app, resources={r"/*": {"origins": "*"}})
 
@@ -51,32 +53,21 @@ def create_company():
             return jsonify({"error": "Company name must be at least 2 characters"}), 400
         
         # Generate company ID as hash of (name + owner_address + timestamp)
+        import time
         company_seed = f"{name}{owner_address}{int(time.time())}"
         company_id = "0x" + hashlib.sha256(company_seed.encode()).hexdigest()[:40]
         
-        # Submit transaction
-        tx = CompanyActionTransaction(
-            owner_address,
-            "create",
-            {
-                "company_id": company_id,
-                "name": name,
-                "owner_address": owner_address,
-                "owner_public_key": owner_public_key
-            },
-            owner_public_key
-        )
+        # Create company
+        company = Company(company_id, name, owner_address, owner_public_key)
+        companies[company_id] = company
         
-        blockchain.add_transaction(tx)
-        
-        print(f"[API] [OK] Company creation submitted: {name} ({company_id})")
+        print(f"[API] [OK] Company created: {name} ({company_id})")
         
         return jsonify({
-            "message": "Company creation transaction submitted to pool",
             "company_id": company_id,
             "name": name,
             "owner": owner_address,
-            "created_at": int(time.time())
+            "created_at": company.created_at
         }), 200
         
     except Exception as e:
@@ -107,34 +98,25 @@ def add_employee():
         if role not in ['employee', 'manager', 'owner']:
             return jsonify({"error": "Invalid role. Must be: employee, manager, or owner"}), 400
         
-        if company_id not in blockchain.companies:
+        if company_id not in companies:
             return jsonify({"error": "Company not found"}), 404
         
-        company = blockchain.companies[company_id]
+        company = companies[company_id]
         
         # Check if requester is the owner
         if requester_address != company.owner_address:
             return jsonify({"error": "Only company owner can add employees"}), 403
-            
-        # Submit transaction
-        tx = CompanyActionTransaction(
-            requester_address,
-            "add_employee",
-            {
-                "company_id": company_id,
-                "employee_address": employee_address,
-                "employee_public_key": employee_public_key,
-                "role": role
-            },
-            None  # Owner signature validation can be added later
-        )
         
-        blockchain.add_transaction(tx)
+        # Add employee
+        success = company.add_employee(employee_address, role, employee_public_key)
         
-        print(f"[API] [OK] Submitted add employee: {employee_address} as {role} to {company.name}")
+        if not success:
+            return jsonify({"error": "Employee already exists"}), 400
+        
+        print(f"[API] [OK] Added {employee_address} as {role} to {company.name}")
         
         return jsonify({
-            "message": f"Add employee transaction submitted",
+            "message": f"Employee added",
             "company_id": company_id,
             "employee": employee_address,
             "role": role
@@ -152,10 +134,10 @@ def add_employee():
 def get_company(company_id):
     """Get company details and employees"""
     try:
-        if company_id not in blockchain.companies:
+        if company_id not in companies:
             return jsonify({"error": "Company not found"}), 404
         
-        company = blockchain.companies[company_id]
+        company = companies[company_id]
         
         return jsonify({
             "company_id": company.company_id,
@@ -192,7 +174,7 @@ def get_companies():
                 "employees_count": len(c.employees),
                 "balance": c.balance
             }
-            for c in blockchain.companies.values()
+            for c in companies.values()
         ]
         
         return jsonify(company_list), 200
@@ -251,9 +233,8 @@ def set_approval_rules():
         company_id = data.get('company_id', '').strip()
         threshold = data.get('threshold', 0)  # Transactions above this need approval
         required_approvers = data.get('required_approvers', [])  # ["owner", "manager"]
-        requester_address = data.get('requester_address', '').strip()
         
-        if not company_id or company_id not in blockchain.companies:
+        if not company_id or company_id not in companies:
             return jsonify({"error": "Company not found"}), 404
         
         if not isinstance(threshold, (int, float)) or threshold < 0:
@@ -268,28 +249,13 @@ def set_approval_rules():
             if role not in valid_approver_roles:
                 return jsonify({"error": f"Invalid approver role: {role}. Only 'manager' or 'owner' can approve transactions. Employees cannot approve."}), 400
         
-        company = blockchain.companies[company_id]
+        company = companies[company_id]
+        company.set_approval_rules(threshold, required_approvers)
         
-        if requester_address != company.owner_address:
-            return jsonify({"error": "Only company owner can set approval rules"}), 403
-            
-        # Submit transaction
-        tx = CompanyActionTransaction(
-            requester_address,
-            "set_rules",
-            {
-                "company_id": company_id,
-                "threshold": threshold,
-                "required_approvers": required_approvers
-            },
-            None
-        )
-        blockchain.add_transaction(tx)
-        
-        print(f"[API] [OK] Submitted set approval rules for {company.name}: threshold={threshold}, approvers={required_approvers}")
+        print(f"[API] [OK] Set approval rules for {company.name}: threshold={threshold}, approvers={required_approvers}")
         
         return jsonify({
-            "message": "Approval rules update submitted",
+            "message": "Approval rules updated",
             "company_id": company_id,
             "threshold": threshold,
             "required_approvers": required_approvers
@@ -320,10 +286,10 @@ def approve_transaction():
         if decision not in ["approved", "rejected"]:
             return jsonify({"error": "Decision must be 'approved' or 'rejected'"}), 400
         
-        if company_id not in blockchain.companies:
+        if company_id not in companies:
             return jsonify({"error": "Company not found"}), 404
         
-        company = blockchain.companies[company_id]
+        company = companies[company_id]
         success, message = company.submit_approval(tx_id, approver_address, decision)
         
         if not success:
@@ -351,10 +317,10 @@ def approve_transaction():
 def get_pending_approvals(company_id):
     """Get all pending approvals for a company"""
     try:
-        if company_id not in blockchain.companies:
+        if company_id not in companies:
             return jsonify({"error": "Company not found"}), 404
         
-        company = blockchain.companies[company_id]
+        company = companies[company_id]
         
         pending = []
         for tx_id, approval_data in company.pending_approvals.items():
@@ -410,10 +376,10 @@ def add_transaction():
         requires_approval = False
         
         if company_id:
-            if company_id not in blockchain.companies:
+            if company_id not in companies:
                 return jsonify({"error": "Company not found"}), 404
             
-            company = blockchain.companies[company_id]
+            company = companies[company_id]
             
             # Check if sender is employee
             if not company.is_employee(data['sender']):
@@ -435,20 +401,6 @@ def add_transaction():
                 if company.requires_approval(data['amount']):
                     requires_approval = True
                     print(f"[API] Employee {truncate(data['sender'])} sending {data['amount']} (above threshold {company.approval_threshold}) - requires approval")
-
-        # Check balance across chain, pending transactions, and pending company approvals
-        current_balance = blockchain.get_balance(data['sender'])
-        
-        # Deduct amounts from pending approvals across all companies
-        for c in blockchain.companies.values():
-            for pending_info in c.pending_approvals.values():
-                ptx = pending_info["tx"]
-                if ptx.get("sender") == data['sender'] and pending_info["status"] == "pending":
-                    current_balance -= ptx.get("amount", 0)
-        
-        if data['amount'] > current_balance:
-            print(f"[API] [ERROR] Insufficient funds: trying to send {data['amount']}, available {current_balance}")
-            return jsonify({"error": f"Insufficient funds. Available: {current_balance} KLT"}), 400
 
         # Validate transaction signature
         print(f"[API] Validating transaction...")
@@ -486,10 +438,10 @@ def add_transaction():
 def submit_for_mining(company_id, tx_id):
     """Submit an approved transaction to the mining pool"""
     try:
-        if company_id not in blockchain.companies:
+        if company_id not in companies:
             return jsonify({"error": "Company not found"}), 404
         
-        company = blockchain.companies[company_id]
+        company = companies[company_id]
         approval_status = company.get_pending_approval_status(tx_id)
         
         if not approval_status:
@@ -705,10 +657,10 @@ def send_file_transaction():
         requires_approval = False
         
         if company_id:
-            if company_id not in blockchain.companies:
+            if company_id not in companies:
                 return jsonify({"error": "Company not found"}), 404
             
-            company = blockchain.companies[company_id]
+            company = companies[company_id]
             
             if not company.is_employee(sender):
                 return jsonify({"error": "Not a company member"}), 403

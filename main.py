@@ -256,45 +256,6 @@ class FileTransaction:
 
 
 # -------------------------
-# COMPANY ACTION TRANSACTION
-# -------------------------
-class CompanyActionTransaction:
-    """Transaction that modifies company state rather than transferring funds"""
-    def __init__(self, sender_address, action_type, payload, sender_public_key=None):
-        """
-        action_type: "create", "add_employee", "set_rules"
-        payload: dict of action-specific data
-        """
-        self.sender = sender_address
-        self.receiver = "SYSTEM"
-        self.action_type = action_type
-        self.payload = payload
-        self.timestamp = int(time.time())
-        self.signature = None
-        self.sender_public_key = sender_public_key
-        self.transaction_type = "company_action"
-        self.company_id = None
-        self.role = None
-        
-    def to_dict(self):
-        return {
-            "sender": self.sender,
-            "receiver": self.receiver,
-            "action_type": self.action_type,
-            "payload": self.payload,
-            "timestamp": self.timestamp,
-            "signature": self.signature.hex() if isinstance(self.signature, bytes) and self.signature else self.signature,
-            "sender_public_key": self.sender_public_key,
-            "transaction_type": self.transaction_type
-        }
-        
-    def is_valid(self):
-        # We can implement signature validation if needed
-        # But for now we trust it if it was added to the pool
-        return True
-
-
-# -------------------------
 # TRANSACTION
 # -------------------------
 class Transaction:
@@ -460,32 +421,12 @@ class Blockchain:
         self.pending_transactions = []
         self.difficulty = 3
         self.mining_reward = 50
-        self.companies = {}
 
     def create_genesis_block(self):
         return Block([], "0")
 
     def get_latest_block(self):
         return self.chain[-1]
-
-    def get_balance(self, address):
-        balance = 0
-        for block in self.chain:
-            for tx in block.transactions:
-                if hasattr(tx, 'amount'):
-                    if tx.sender == address:
-                        balance -= tx.amount
-                    if tx.receiver == address:
-                        balance += tx.amount
-                        
-        for tx in self.pending_transactions:
-            if hasattr(tx, 'amount'):
-                if tx.sender == address:
-                    balance -= tx.amount
-                if tx.receiver == address:
-                    balance += tx.amount
-                    
-        return balance
 
     def add_transaction(self, transaction):
         if not transaction.is_valid():
@@ -509,44 +450,9 @@ class Blockchain:
         for tx in block.transactions:
             if not tx.is_valid():
                 raise Exception("Invalid transaction in block")
-            
-            # Process company actions dynamically to build state
-            if getattr(tx, "transaction_type", None) == "company_action":
-                self.process_company_action(tx)
 
         self.chain.append(block)
         self.pending_transactions = []
-
-    def process_company_action(self, tx):
-        action = tx.action_type
-        payload = tx.payload
-        
-        if action == "create":
-            company_id = payload.get("company_id")
-            if company_id not in self.companies:
-                self.companies[company_id] = Company(
-                    company_id, 
-                    payload.get("name"), 
-                    payload.get("owner_address"), 
-                    payload.get("owner_public_key")
-                )
-                
-        elif action == "add_employee":
-            company_id = payload.get("company_id")
-            if company_id in self.companies:
-                self.companies[company_id].add_employee(
-                    payload.get("employee_address"),
-                    payload.get("role"),
-                    payload.get("employee_public_key")
-                )
-                
-        elif action == "set_rules":
-            company_id = payload.get("company_id")
-            if company_id in self.companies:
-                self.companies[company_id].set_approval_rules(
-                    payload.get("threshold"),
-                    payload.get("required_approvers")
-                )
 
     def is_chain_valid(self):
         for i in range(1, len(self.chain)):
@@ -623,13 +529,6 @@ class Blockchain:
                             tx_data['file_size'],
                             tx_data.get('sender_public_key')
                         )
-                    elif tx_type == 'company_action':
-                        tx = CompanyActionTransaction(
-                            tx_data['sender'],
-                            tx_data['action_type'],
-                            tx_data['payload'],
-                            tx_data.get('sender_public_key')
-                        )
                     else:
                         # Reconstruct regular Transaction
                         tx = Transaction(
@@ -665,13 +564,6 @@ class Blockchain:
                         tx_data['file_name'],
                         tx_data['file_hash'],
                         tx_data['file_size'],
-                        tx_data.get('sender_public_key')
-                    )
-                elif tx_type == 'company_action':
-                    tx = CompanyActionTransaction(
-                        tx_data['sender'],
-                        tx_data['action_type'],
-                        tx_data['payload'],
                         tx_data.get('sender_public_key')
                     )
                 else:
